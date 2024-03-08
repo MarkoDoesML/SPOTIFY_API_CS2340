@@ -19,6 +19,8 @@
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
+
+                <data android:host="auth" android:scheme="com.example.spotify-api-app"/>
             </intent-filter>
         </activity>
     </application>
