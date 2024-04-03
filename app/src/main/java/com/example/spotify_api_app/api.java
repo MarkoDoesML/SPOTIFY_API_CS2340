@@ -3,17 +3,13 @@ package com.example.spotify_api_app;
 import android.net.Uri;
 import android.util.Log;
 
-import com.spotify.sdk.android.auth.AuthorizationClient;
 import com.spotify.sdk.android.auth.AuthorizationRequest;
 import com.spotify.sdk.android.auth.AuthorizationResponse;
-
-import java.io.FileWriter;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.net.URI;
 import java.util.Base64;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicReference;
@@ -31,7 +27,6 @@ public class api {
 
     private static final OkHttpClient mOkHttpClient = new OkHttpClient();
 
-    public static String token;
     private static Call mCall;
 
     /**
@@ -48,60 +43,6 @@ public class api {
                 .build();
     }
 
-    public static void test(String mAccessToken) {
-        if (mAccessToken == null) {
-            return;
-        }
-
-        // Create a request to get the user profile
-        final Request request = new Request.Builder()
-                .url("https://api.spotify.com/v1/me")
-                .addHeader("Authorization", "Bearer " + mAccessToken)
-                .build();
-
-        cancelCall();
-        mCall = mOkHttpClient.newCall(request);
-
-        mCall.enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                Log.d("HTTP", "Failed to fetch data: " + e);
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                try {
-                    final JSONObject jsonObject = new JSONObject(response.body().string());
-                } catch (JSONException e) {
-                    Log.d("JSON", "Failed to parse data: " + e);
-                }
-            }
-        });
-    }
-
-    private static Uri getRedirectUri() {
-        return Uri.parse(REDIRECT_URI);
-    }
-
-    public static void cancelCall() {
-        if (mCall != null) {
-            mCall.cancel();
-        }
-    }
-
-    public static void output(String response, String filename) {
-        try {
-            JSONObject json = new JSONObject(response);
-            try (FileWriter file = new FileWriter(filename, false)) {
-                file.write(json.toString(4));
-                file.flush();
-            }  catch (Exception e) {
-                Log.e("JSON", "Error writing access token to file: " + e.getMessage());
-            }
-        } catch (JSONException e) {
-            Log.e("JSON", "Error parsing token response: " + e.getMessage());
-        }
-    }
 
     public interface TokenCallback {
         void onTokenReceived(String token);
@@ -179,6 +120,75 @@ public class api {
 
         // Return the token obtained from the callback
         return tokenRef.get();
+    }
+
+    private static Uri getRedirectUri() {
+        return Uri.parse(REDIRECT_URI);
+    }
+
+    public static void cancelCall() {
+        if (mCall != null) {
+            mCall.cancel();
+        }
+    }
+
+    public interface JsonCallback {
+        void onJsonResponseReceived(JSONObject response);
+    }
+
+    public static void executeRequest(Request request, JsonCallback callback) {
+        OkHttpClient okHttpClient = new OkHttpClient();
+        Call call = okHttpClient.newCall(request);
+
+        call.enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Log.d("HTTP", "Failed to fetch data: " + e);
+                callback.onJsonResponseReceived(null); // Notify callback with null token
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                try {
+                    final JSONObject jsonObject = new JSONObject(response.body().string());
+                    callback.onJsonResponseReceived(jsonObject); // Notify callback with token
+                } catch (JSONException e) {
+                    Log.d("JSON", "Failed to parse data: " + e);
+                    callback.onJsonResponseReceived(null); // Notify callback with null token
+                }
+            }
+        });
+    }
+
+    public static JSONObject makeRequest(Request request) {
+        // Create a CountDownLatch with initial count 1
+        CountDownLatch latch = new CountDownLatch(1);
+
+        // Variable to store the JSON object
+        AtomicReference<JSONObject> jsonObjectRef = new AtomicReference<>(null);
+
+        // Call executeRequest() with a callback
+        executeRequest(request, new JsonCallback() {
+            @Override
+            public void onJsonResponseReceived(JSONObject jsonObject) {
+                // Store the JSON object
+                jsonObjectRef.set(jsonObject);
+                // Decrease the count of the latch to 0, indicating the completion of the asynchronous call
+                latch.countDown();
+            }
+        });
+
+        try {
+            // Wait for the asynchronous call to complete
+            latch.await();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            // Handle interruption
+            return null;
+        }
+
+        // Return the JSON object obtained from the callback
+        return jsonObjectRef.get();
     }
 
 
