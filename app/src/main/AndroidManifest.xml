@@ -32,6 +32,19 @@
             <!-- No intent filter means this is not the entry point -->
             <!-- If MainActivity requires custom data handling, the data element should be inside the activity or its relevant intent-filter -->
         </activity>
+
+        <activity
+            android:name=".WrappedActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ArtistsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".SongsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".AlbumsActivity"
+            android:exported="false" />
     </application>
 
 </manifest>
