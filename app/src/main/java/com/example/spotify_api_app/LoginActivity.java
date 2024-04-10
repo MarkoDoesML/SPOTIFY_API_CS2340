@@ -100,7 +100,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void navigateToMainFeedActivity() {
-        Intent intent = new Intent(LoginActivity.this, MainFeedActivity.class);
+        Intent intent = new Intent(LoginActivity.this, MainProfileActivity.class);
         startActivity(intent);
         finish();
     }
