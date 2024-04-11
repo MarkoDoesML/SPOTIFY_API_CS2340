@@ -41,6 +41,9 @@ public class db {
             userProfile.put("image_url", null);
         }
 
+        // Put uri into map
+        userProfile.put("uri", jsonObject.getString("uri"));
+
         // Add user profile information to database
         db.collection("users")
                 .add(userProfile)
