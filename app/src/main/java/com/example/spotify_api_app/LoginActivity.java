@@ -65,7 +65,7 @@ public class LoginActivity extends AppCompatActivity {
                     .addOnCompleteListener(this, task -> {
                         if (task.isSuccessful()) {
                             Log.d("Login", "signInWithEmail:success");
-                            navigateToMainFeedActivity();
+                            navigateToMainActivity();
                         } else {
                             Log.w("Login", "signInWithEmail:failure", task.getException());
                             Toast.makeText(LoginActivity.this, "Authentication failed.",
@@ -86,7 +86,7 @@ public class LoginActivity extends AppCompatActivity {
                     .addOnCompleteListener(this, task -> {
                         if (task.isSuccessful()) {
                             Log.d("SignUp", "createUserWithEmail:success");
-                            navigateToMainFeedActivity();
+                            navigateToMainActivity();
                         } else {
                             Log.w("SignUp", "createUserWithEmail:failure", task.getException());
                             Toast.makeText(LoginActivity.this, "Registration failed.",
@@ -99,8 +99,8 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    private void navigateToMainFeedActivity() {
-        Intent intent = new Intent(LoginActivity.this, MainFeedActivity.class);
+    private void navigateToMainActivity() {
+        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
         startActivity(intent);
         finish();
     }
