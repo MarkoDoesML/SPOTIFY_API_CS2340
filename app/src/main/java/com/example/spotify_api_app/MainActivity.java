@@ -28,6 +28,9 @@ import okhttp3.Callback;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+
 
 public class MainActivity extends AppCompatActivity {
 
@@ -115,6 +118,7 @@ public class MainActivity extends AppCompatActivity {
             SharedPreferences.Editor editor = sharedPreferences.edit();
             editor.putString("accessTokenData", json);
             editor.apply();
+            saveAccessTokenDataToFirebase(accessTokenData);
         } else {
             Log.e("AccessToken", "Access code or access token is null");
         }
@@ -131,4 +135,21 @@ public class MainActivity extends AppCompatActivity {
         api.cancelCall();
         super.onDestroy();
     }
+
+
+
+    private void saveAccessTokenDataToFirebase(AccessTokenData accessTokenData) {
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference myRef = database.getReference("users");
+
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+            String userId = user.getUid();
+            myRef.child(userId).setValue(accessTokenData);
+        } else {
+            Log.e("Firebase", "User not logged in");
+        }
+    }
+
+
 }
