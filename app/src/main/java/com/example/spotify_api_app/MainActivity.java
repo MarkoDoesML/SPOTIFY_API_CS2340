@@ -40,6 +40,10 @@ public class MainActivity extends AppCompatActivity {
 
         login();
 
+
+        // TODO: fix bug with gson, it doesn't always update after login
+        // TODO: create a seperate module that has specific api requests built into it
+
         // gson storage for now, whoever is in charge of firebase needs to integrate
         // _____________________________________________________________
         // Read data from SharedPreferences
@@ -65,6 +69,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         testBtn.setOnClickListener((v) -> {
+
             final Request request = new Request.Builder()
                     .url("https://api.spotify.com/v1/me")
                     .addHeader("Authorization", "Bearer " + mAccessToken)
