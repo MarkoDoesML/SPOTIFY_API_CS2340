@@ -99,6 +99,7 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
+
     private void navigateToMainActivity() {
         Intent intent = new Intent(LoginActivity.this, MainActivity.class);
         startActivity(intent);

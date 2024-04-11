@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
+
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
 
     <application
         android:allowBackup="true"
@@ -13,7 +15,11 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.SPOTIFY_API_APP"
         tools:targetApi="31">
-        <!-- Launcher Activity -->
+
+        <activity
+            android:name=".MainProfileActivity"
+            android:exported="true" />
+
         <activity
             android:name=".LoginActivity"
             android:exported="true">
@@ -30,7 +36,23 @@
                 <data android:host="auth" android:scheme="com.example.spotify-api-app"/>
             </intent-filter>
         </activity>
-        <!-- Other activities without launcher intent filters -->
-        <!-- Add other activities as needed -->
+
+
+        <activity
+            android:name=".WrappedActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ArtistsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".SongsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".AlbumsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".FeedActivity"
+            android:exported="false" />
+>>>>>>> master
     </application>
 </manifest>

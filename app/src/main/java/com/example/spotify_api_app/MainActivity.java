@@ -2,14 +2,14 @@ package com.example.spotify_api_app;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+
 import android.content.SharedPreferences;
+
 import android.os.Bundle;
 import android.content.Intent;
-import android.net.Uri;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -17,8 +17,12 @@ import com.spotify.sdk.android.auth.AuthorizationClient;
 import com.spotify.sdk.android.auth.AuthorizationRequest;
 import com.spotify.sdk.android.auth.AuthorizationResponse;
 
+import android.content.SharedPreferences;
+import com.google.gson.Gson;
+
 import org.json.JSONException;
 import org.json.JSONObject;
+
 
 import com.google.gson.Gson;
 import java.io.IOException;
@@ -30,6 +34,9 @@ import okhttp3.Request;
 import okhttp3.Response;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+
+
+import okhttp3.Request;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -51,6 +58,7 @@ public class MainActivity extends AppCompatActivity {
         output = (TextView) findViewById(R.id.output);
 
         login();
+
 
         // gson storage for now, whoever is in charge of firebase needs to integrate
         // _____________________________________________________________
@@ -77,6 +85,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         testBtn.setOnClickListener((v) -> {
+
             final Request request = new Request.Builder()
                     .url("https://api.spotify.com/v1/me")
                     .addHeader("Authorization", "Bearer " + mAccessToken)
@@ -84,6 +93,7 @@ public class MainActivity extends AppCompatActivity {
 
             try {
                 JSONObject jsonResponse = api.makeRequest(request);
+
                 setTextAsync(jsonResponse.toString(4), output);
             } catch (JSONException e) {
                 Log.d("JSON", "Failed to parse data: " + e);
@@ -118,7 +128,9 @@ public class MainActivity extends AppCompatActivity {
             SharedPreferences.Editor editor = sharedPreferences.edit();
             editor.putString("accessTokenData", json);
             editor.apply();
+
             saveAccessTokenDataToFirebase(accessTokenData);
+
         } else {
             Log.e("AccessToken", "Access code or access token is null");
         }
