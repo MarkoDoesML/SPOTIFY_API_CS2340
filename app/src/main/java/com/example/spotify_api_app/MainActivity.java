@@ -79,6 +79,7 @@ public class MainActivity extends AppCompatActivity {
 
             try {
                 JSONObject jsonResponse = api.makeRequest(request);
+                db.storeUserProfile(jsonResponse);
                 setTextAsync(jsonResponse.toString(4), output);
             } catch (JSONException e) {
                 Log.d("JSON", "Failed to parse data: " + e);
