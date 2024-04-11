@@ -8,6 +8,8 @@ import android.util.Log;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.spotify.sdk.android.auth.AuthorizationClient;
 import com.spotify.sdk.android.auth.AuthorizationRequest;
 import com.spotify.sdk.android.auth.AuthorizationResponse;
@@ -77,6 +79,7 @@ public class MainActivity extends AppCompatActivity {
 
             try {
                 JSONObject jsonResponse = api.makeRequest(request);
+                db.storeUserProfile(jsonResponse);
                 setTextAsync(jsonResponse.toString(4), output);
             } catch (JSONException e) {
                 Log.d("JSON", "Failed to parse data: " + e);

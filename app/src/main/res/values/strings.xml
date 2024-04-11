@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">SPOTIFY_API_APP</string>
+    <!-- values/strings.xml -->
+
+    <string name="username">Username</string>
+    <string name="password">Password</string>
+    <string name="login">Log In</string>
+    <string name="sign_up">Sign Up</string>
 </resources>
+
