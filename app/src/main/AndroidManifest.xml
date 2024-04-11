@@ -53,6 +53,6 @@
         <activity
             android:name=".FeedActivity"
             android:exported="false" />
->>>>>>> master
+
     </application>
 </manifest>
