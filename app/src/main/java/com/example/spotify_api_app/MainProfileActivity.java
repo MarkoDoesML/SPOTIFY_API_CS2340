@@ -19,8 +19,44 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
+import androidx.appcompat.app.AppCompatActivity;
+
+
+import android.os.Bundle;
+import android.content.Intent;
+import android.util.Log;
+import android.widget.Button;
+import android.widget.TextView;
+
+import com.spotify.sdk.android.auth.AuthorizationClient;
+import com.spotify.sdk.android.auth.AuthorizationRequest;
+import com.spotify.sdk.android.auth.AuthorizationResponse;
+
+import android.content.SharedPreferences;
+import com.google.gson.Gson;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import okhttp3.Request;
+
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+
 public class MainProfileActivity extends AppCompatActivity {
+    private SharedPreferences sharedPreferences;
+    private FirebaseAuth mAuth;
+
     Button btn_wrapped;
+    Button btn_logout;
     RecyclerView recyclerView;
     WrappedAdapter wrappedAdapter;
     List<WrappedItem> wrappedItemList = new ArrayList<>();
@@ -31,9 +67,11 @@ public class MainProfileActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_profile);
-
+        mAuth = FirebaseAuth.getInstance();
+        sharedPreferences = getSharedPreferences("loginPrefs", Context.MODE_PRIVATE);
         btn_wrapped = findViewById(R.id.btn_wrapped_page);
         recyclerView = findViewById(R.id.wrappedList);
+        btn_logout = findViewById(R.id.logout);
 
         wrappedAdapter = new WrappedAdapter(this, wrappedItemList);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -46,6 +84,13 @@ public class MainProfileActivity extends AppCompatActivity {
                 String username = "Username";
                 wrappedAdapter.addItem(username, date);
                 wrappedItemList = new ArrayList<>();
+            }
+        });
+
+        btn_logout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                logoutUser();
             }
         });
 
@@ -63,5 +108,16 @@ public class MainProfileActivity extends AppCompatActivity {
                 return false;
             }
         });
+    }
+
+    private void logoutUser() {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.clear();
+        editor.apply();
+
+        mAuth.signOut(); // Sign out the user from Firebase
+        Intent intent = new Intent(MainProfileActivity.this, LoginActivity.class);
+        startActivity(intent); // Navigate to LoginActivity
+        finish(); // Close the current activity
     }
 }

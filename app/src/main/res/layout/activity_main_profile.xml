@@ -30,22 +30,44 @@
             android:orientation="vertical">
 
 
-            <TextView
-                android:id="@+id/username"
+            <RelativeLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Username"
-                android:fontFamily="@font/poppins_semibold"
-                android:textColor="@color/black"
-                android:textSize="24sp" />
+                android:layout_marginLeft="16dp">
+
+                <TextView
+                    android:id="@+id/username"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/poppins_semibold"
+                    android:text="Username"
+                    android:textColor="@color/black"
+                    android:textSize="24sp" />
+
+                <!-- Logout Button -->
+                <Button
+                    android:id="@+id/logout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Logout"
+                    android:onClick="logoutUser"
+                    android:layout_toRightOf="@id/username"
+                    android:textSize="18sp"
+                    android:layout_marginStart="8dp"
+                    android:paddingStart="8dp"
+                    android:paddingEnd="8dp"
+                    android:paddingTop="4dp"
+                    android:paddingBottom="4dp" />
+
+            </RelativeLayout>
 
             <Button
                 android:id="@+id/btn_wrapped_page"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
-                android:text="New Wrapped"
-                android:backgroundTint="@color/dark_gray"/>
+                android:backgroundTint="@color/dark_gray"
+                android:text="New Wrapped" />
         </LinearLayout>
 
 
