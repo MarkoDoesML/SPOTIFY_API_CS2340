@@ -91,16 +91,16 @@ public class MainProfileActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(wrappedAdapter);
 
-//        final Request request = new Request.Builder()
-//                .url("https://api.spotify.com/v1/me")
-//                .addHeader("Authorization", "Bearer " + mAccessToken)
-//                .build();
-//        try {
-//            JSONObject jsonResponse = api.makeRequest(request);
-//            db.storeUserProfile(jsonResponse);
-//        } catch (JSONException e) {
-//            Log.d("JSON", "Failed to parse data: " + e);
-//        }
+        final Request request = new Request.Builder()
+                .url("https://api.spotify.com/v1/me")
+                .addHeader("Authorization", "Bearer " + mAccessToken)
+                .build();
+        try {
+            JSONObject jsonResponse = api.makeRequest(request);
+            db.storeUserProfile(jsonResponse);
+        } catch (JSONException e) {
+            Log.d("JSON", "Failed to parse data: " + e);
+        }
 
 //        username = db.get
 //        usernameTextView.setText(ussername);

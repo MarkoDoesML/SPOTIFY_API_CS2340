@@ -4,6 +4,7 @@ package com.example.spotify_api_app;
 import android.annotation.SuppressLint;
 import android.util.Log;
 
+
 import androidx.annotation.NonNull;
 
 import com.google.android.gms.tasks.OnFailureListener;
@@ -13,6 +14,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firestore.v1.WriteResult;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -29,39 +31,37 @@ public class db {
     private static final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
     public static void storeUserProfile(JSONObject jsonObject) throws JSONException {
+
         String username = user.getEmail();
+
         // Check if passed in JSONObject is null
         if (jsonObject == null) { Log.d("db", "JSONObject is null when trying to store user profile data."); return; }
-
         // Create map to store user profile information
         Map<String, Object> userProfile = new HashMap<>();
-
         // Put display name into map
         userProfile.put("display_name", jsonObject.getString("display_name"));
-
         // Put image url in map if user has profile picture, else put null
         if (jsonObject.getJSONArray("images").length() > 0) {
             userProfile.put("image_url", jsonObject.getJSONArray("images").getJSONObject(0).getString("url"));
         } else {
             userProfile.put("image_url", null);
         }
-
         // Put uri into map
         userProfile.put("uri", jsonObject.getString("uri"));
-        // Add user profile information to database
-        db.collection("users")
-                .add(userProfile)
-                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+
+        DocumentReference doc = db.collection(username).document("profile_info");
+
+        doc.set(userProfile)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
-                    public void onSuccess(DocumentReference documentReference) {
-                        Log.d("db", "DocumentSnapshot added with ID: " + documentReference.getId());
+                    public void onSuccess(Void aVoid) {
+                        Log.d("db", "Document added to collection successfully!");
                     }
                 })
-
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        Log.d("db", "Error adding document", e);
+                        Log.e("db", "Error adding document to collection", e);
                     }
                 });
     }
