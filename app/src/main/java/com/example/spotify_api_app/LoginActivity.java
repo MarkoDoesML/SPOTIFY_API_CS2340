@@ -150,26 +150,27 @@ public class LoginActivity extends AppCompatActivity {
         // save the accessCode and accessToken
         // accessCode can be used to generate another token if it is expired
         // _____________________________________________________________
-        if (accessCode != null && accessToken != null) {
-            AccessTokenData accessTokenData = new AccessTokenData(accessCode, accessToken);
 
-            Gson gson = new Gson();
-            String json = gson.toJson(accessTokenData);
+        AccessTokenData accessTokenData = new AccessTokenData(accessCode, accessToken);
 
-            SharedPreferences sharedPreferences = getSharedPreferences("AccessTokenData", MODE_PRIVATE);
-            SharedPreferences.Editor editor = sharedPreferences.edit();
-            editor.putString("accessTokenData", json);
-            editor.apply();
-        } else {
-            Log.e("AccessToken", "Access code or access token is null");
-        }
+        Gson gson = new Gson();
+        String json = gson.toJson(accessTokenData);
+
+        SharedPreferences sharedPreferences = getSharedPreferences("AccessTokenData", MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("accessTokenData", json);
+        editor.apply();
+        navigateToMainFeedActivity();
         // _____________________________________________________________
 
     }
 
+    private void lastPart() {
+        login();
+    }
+
     private void navigateToMainFeedActivity() {
-        api.login(LoginActivity.this);
-        Intent intent = new Intent(LoginActivity.this, MainProfileActivity.class);
+        Intent intent = new Intent(this, wSpotify.class);
         startActivity(intent);
         finish();
     }

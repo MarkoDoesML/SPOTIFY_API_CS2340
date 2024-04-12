@@ -20,21 +20,18 @@
         <activity
             android:name=".LoginActivity"
             android:exported="true">
-
-            <!-- This intent filter will make LoginActivity the entry point of the app -->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+
+            <intent-filter>
+                <data android:host="auth" android:scheme="com.example.spotify-api-app"/>
             </intent-filter>
         </activity>
         <activity
-            android:name=".MainActivity"
-            android:exported="true"> <!-- Keep this true if MainActivity can be started by other apps or components -->
-            <!-- No intent filter means this is not the entry point -->
-            <!-- If MainActivity requires custom data handling, the data element should be inside the activity or its relevant intent-filter -->
-        </activity>
-
+            android:name=".wSpotify"
+            android:exported="false" />
         <activity
             android:name=".WrappedActivity"
             android:exported="false" />
