@@ -70,6 +70,7 @@ public class MainProfileActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_profile);
+
         mAuth = FirebaseAuth.getInstance();
         sharedPreferences = getSharedPreferences("AccessTokenData", MODE_PRIVATE);
         String json = sharedPreferences.getString("accessTokenData", null);
@@ -90,16 +91,16 @@ public class MainProfileActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(wrappedAdapter);
 
-        final Request request = new Request.Builder()
-                .url("https://api.spotify.com/v1/me")
-                .addHeader("Authorization", "Bearer " + mAccessToken)
-                .build();
-        try {
-            JSONObject jsonResponse = api.makeRequest(request);
-            db.storeUserProfile(jsonResponse);
-        } catch (JSONException e) {
-            Log.d("JSON", "Failed to parse data: " + e);
-        }
+//        final Request request = new Request.Builder()
+//                .url("https://api.spotify.com/v1/me")
+//                .addHeader("Authorization", "Bearer " + mAccessToken)
+//                .build();
+//        try {
+//            JSONObject jsonResponse = api.makeRequest(request);
+//            db.storeUserProfile(jsonResponse);
+//        } catch (JSONException e) {
+//            Log.d("JSON", "Failed to parse data: " + e);
+//        }
 
 //        username = db.get
 //        usernameTextView.setText(ussername);
@@ -141,6 +142,7 @@ public class MainProfileActivity extends AppCompatActivity {
     }
 
     private void logoutUser() {
+        sharedPreferences = getSharedPreferences("loginPrefs", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.clear();
         editor.apply();
