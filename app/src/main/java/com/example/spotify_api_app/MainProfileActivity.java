@@ -61,14 +61,27 @@ public class MainProfileActivity extends AppCompatActivity {
     WrappedAdapter wrappedAdapter;
     List<WrappedItem> wrappedItemList = new ArrayList<>();
     private BottomNavigationView bottomNavigationView;
-
+    private AccessTokenData accessTokenData;
+    private String mAccessToken, mAccessCode;
+    TextView usernameTextView;
+    String username;
     @Override
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_profile);
         mAuth = FirebaseAuth.getInstance();
-        sharedPreferences = getSharedPreferences("loginPrefs", Context.MODE_PRIVATE);
+        sharedPreferences = getSharedPreferences("AccessTokenData", MODE_PRIVATE);
+        String json = sharedPreferences.getString("accessTokenData", null);
+        TextView usernameTextView = findViewById(R.id.username);
+
+        // Deserialize the JSON string using Gson
+        Gson gson = new Gson();
+        accessTokenData = gson.fromJson(json, AccessTokenData.class);
+
+        mAccessCode = accessTokenData.getAccessCode();
+        mAccessToken = accessTokenData.getAccessToken();
+
         btn_wrapped = findViewById(R.id.btn_wrapped_page);
         recyclerView = findViewById(R.id.wrappedList);
         btn_logout = findViewById(R.id.logout);
@@ -77,9 +90,26 @@ public class MainProfileActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(wrappedAdapter);
 
+        final Request request = new Request.Builder()
+                .url("https://api.spotify.com/v1/me")
+                .addHeader("Authorization", "Bearer " + mAccessToken)
+                .build();
+        try {
+            JSONObject jsonResponse = api.makeRequest(request);
+            db.storeUserProfile(jsonResponse);
+        } catch (JSONException e) {
+            Log.d("JSON", "Failed to parse data: " + e);
+        }
+
+//        username = db.get
+//        usernameTextView.setText(ussername);
+
         btn_wrapped.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+
+
                 String date = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
                 String username = "Username";
                 wrappedAdapter.addItem(username, date);

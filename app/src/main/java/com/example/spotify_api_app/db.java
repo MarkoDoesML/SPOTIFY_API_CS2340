@@ -8,6 +8,9 @@ import androidx.annotation.NonNull;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -23,8 +26,10 @@ public class db {
     // Database where the spotify data will be stored
     @SuppressLint("StaticFieldLeak")
     private static final FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private static final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
     public static void storeUserProfile(JSONObject jsonObject) throws JSONException {
+        String username = user.getEmail();
         // Check if passed in JSONObject is null
         if (jsonObject == null) { Log.d("db", "JSONObject is null when trying to store user profile data."); return; }
 
@@ -43,7 +48,6 @@ public class db {
 
         // Put uri into map
         userProfile.put("uri", jsonObject.getString("uri"));
-
         // Add user profile information to database
         db.collection("users")
                 .add(userProfile)
@@ -157,4 +161,8 @@ public class db {
                     }
                 });
     }
+
+//    public static String getUsername() {
+//
+//    }
 }

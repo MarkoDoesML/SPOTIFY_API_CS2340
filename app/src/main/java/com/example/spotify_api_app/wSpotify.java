@@ -70,6 +70,7 @@ public class wSpotify extends AppCompatActivity{
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString("accessTokenData", json);
         editor.apply();
+
         navigateToMainFeedActivity();
         // _____________________________________________________________
 
