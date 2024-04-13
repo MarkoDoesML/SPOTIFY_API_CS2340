@@ -141,7 +141,7 @@ public class MainProfileActivity extends AppCompatActivity {
                 performLogout(null);
             }
         });
-
+        //test to commit
         // Set up onClickListener for the Delete Account button
         btn_delete_account.setOnClickListener(new View.OnClickListener() {
             @Override
