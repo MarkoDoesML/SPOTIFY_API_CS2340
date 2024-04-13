@@ -5,12 +5,15 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.text.SimpleDateFormat;
@@ -42,6 +45,9 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.google.firebase.firestore.DocumentSnapshot;
+
+import com.google.firebase.auth.FirebaseUser;
+
 import com.spotify.sdk.android.auth.AuthorizationClient;
 import com.spotify.sdk.android.auth.AuthorizationRequest;
 import com.spotify.sdk.android.auth.AuthorizationResponse;
@@ -55,7 +61,13 @@ import org.json.JSONObject;
 import okhttp3.Request;
 
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
+import android.content.DialogInterface;
+import android.widget.Toast;
+import androidx.appcompat.app.AlertDialog;
+import androidx.annotation.NonNull;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+
 
 public class MainProfileActivity extends AppCompatActivity {
     private SharedPreferences sharedPreferences;
@@ -94,15 +106,18 @@ public class MainProfileActivity extends AppCompatActivity {
         btn_wrapped = findViewById(R.id.btn_wrapped_page);
         recyclerView = findViewById(R.id.wrappedList);
         btn_logout = findViewById(R.id.logout);
+
         profileImage = findViewById(R.id.profileImage);
+
+        Button btn_change_login_info = findViewById(R.id.btn_change_login_info);
+        Button btn_delete_account = findViewById(R.id.btn_delete_account);
+
 
         wrappedAdapter = new WrappedAdapter(this, wrappedItemList);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(wrappedAdapter);
 
 
-//        username = db.get
-//        usernameTextView.setText(ussername);
 
 //        output = db.makeRequest("profile_info");
 
@@ -139,11 +154,26 @@ public class MainProfileActivity extends AppCompatActivity {
                 wrappedItemList = new ArrayList<>();
             }
         });
-
+        // Set onClickListener for Change Login Information
+        btn_change_login_info.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent changeLoginIntent = new Intent(MainProfileActivity.this, changeLoginInfoActivity.class);
+                startActivity(changeLoginIntent);
+            }
+        });
         btn_logout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                logoutUser();
+                performLogout(null);
+            }
+        });
+        //test to commit again
+        // Set up onClickListener for the Delete Account button
+        btn_delete_account.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                deleteAccount();
             }
         });
 
@@ -163,15 +193,44 @@ public class MainProfileActivity extends AppCompatActivity {
         });
     }
 
-    private void logoutUser() {
+    public void logoutUser(View view) {
+        performLogout(view);
+    }
+
+    private void performLogout(View view) {
         sharedPreferences = getSharedPreferences("loginPrefs", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.clear();
         editor.apply();
 
-        mAuth.signOut(); // Sign out the user from Firebase
+        mAuth.signOut();
         Intent intent = new Intent(MainProfileActivity.this, LoginActivity.class);
-        startActivity(intent); // Navigate to LoginActivity
-        finish(); // Close the current activity
+        startActivity(intent);
+        finish();
     }
+   private void deleteAccount() {
+        new AlertDialog.Builder(this)
+                .setTitle("Confirm Account Deletion")
+                .setMessage("Are you sure you want to delete your account? This cannot be undone.")
+                .setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                    FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                       user.delete()
+                                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task) {
+                                        if (task.isSuccessful()) {
+                                            Log.d("deleteUser()", "User account deleted.");
+                                       }
+                                   }
+                                });
+                        performLogout(null);
+                        finish();
+                    }
+                })
+                .setNegativeButton("Cancel", null)
+                .show();
+    }
+
 }

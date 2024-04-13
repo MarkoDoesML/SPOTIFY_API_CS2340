@@ -5,14 +5,12 @@
     android:layout_height="match_parent"
     android:background="@color/light_yellow">
 
-
     <LinearLayout
         android:id="@+id/profileSection"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:padding="16dp">
-
 
         <ImageView
             android:id="@+id/profileImage"
@@ -21,14 +19,12 @@
             android:padding="8dp"
             android:src="@drawable/artist_profile_pic" />
 
-
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="130dp"
             android:layout_marginLeft="16dp"
             android:layout_weight="1"
             android:orientation="vertical">
-
 
             <RelativeLayout
                 android:layout_width="wrap_content"
@@ -44,33 +40,9 @@
                     android:textColor="@color/black"
                     android:textSize="24sp" />
 
-                <!-- Logout Button -->
-                <Button
-                    android:id="@+id/logout"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Logout"
-                    android:onClick="logoutUser"
-                    android:layout_toRightOf="@id/username"
-                    android:textSize="18sp"
-                    android:layout_marginStart="8dp"
-                    android:paddingStart="8dp"
-                    android:paddingEnd="8dp"
-                    android:paddingTop="4dp"
-                    android:paddingBottom="4dp" />
 
             </RelativeLayout>
-
-            <Button
-                android:id="@+id/btn_wrapped_page"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:backgroundTint="@color/dark_gray"
-                android:text="New Wrapped" />
         </LinearLayout>
-
-
     </LinearLayout>
 
     <LinearLayout
@@ -79,7 +51,46 @@
         android:layout_below="@id/profileSection"
         android:orientation="vertical"
         android:padding="16dp">
+        <Button
+            android:id="@+id/btn_delete_account"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Delete Account"
+            android:layout_below="@id/username"
+            android:layout_alignParentEnd="true"
+            android:background="@android:color/holo_red_light"
+            android:textColor="@android:color/white"
+            android:padding="16dp"/>
 
+        <Button
+            android:id="@+id/logout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Logout"
+            android:onClick="logoutUser"
+            android:layout_below="@id/btn_delete_account"
+            android:layout_alignParentEnd="true"
+            android:textSize="18sp"
+            android:padding="8dp" />
+
+        <Button
+            android:id="@+id/btn_change_login_info"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Change Login Information"
+            android:layout_below="@id/logout"
+            android:layout_alignParentEnd="true"
+            android:background="@android:color/holo_blue_dark"
+            android:textColor="@android:color/white"
+            android:padding="16dp"/>
+
+        <Button
+            android:id="@+id/btn_wrapped_page"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:backgroundTint="@color/dark_gray"
+            android:text="New Wrapped" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -89,7 +100,6 @@
             android:fontFamily="@font/poppins_semibold"
             android:textSize="18sp"
             android:layout_marginBottom="8dp" />
-
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/wrappedList"
