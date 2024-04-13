@@ -167,6 +167,10 @@ public class MainProfileActivity extends AppCompatActivity {
     }
 
     public void logoutUser() {
+        performLogout();
+    }
+
+    private void performLogout() {
         sharedPreferences = getSharedPreferences("loginPrefs", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.clear();
@@ -194,7 +198,7 @@ public class MainProfileActivity extends AppCompatActivity {
                                        }
                                    }
                                 });
-                        logoutUser();
+                        performLogout();
                         finish();
                     }
                 })
