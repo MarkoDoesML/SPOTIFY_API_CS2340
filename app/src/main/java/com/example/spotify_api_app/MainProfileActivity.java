@@ -18,6 +18,10 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import com.squareup.picasso.Picasso;
+
 
 import android.content.Context;
 import android.content.Intent;
@@ -26,6 +30,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -36,6 +41,7 @@ import android.util.Log;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.spotify.sdk.android.auth.AuthorizationClient;
 import com.spotify.sdk.android.auth.AuthorizationRequest;
 import com.spotify.sdk.android.auth.AuthorizationResponse;
@@ -65,9 +71,11 @@ public class MainProfileActivity extends AppCompatActivity {
     private String mAccessToken, mAccessCode;
     TextView usernameTextView;
     String username;
+    CompletableFuture<DocumentSnapshot> output;
+    private ImageView profileImage;
     @Override
 
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_profile);
 
@@ -86,31 +94,45 @@ public class MainProfileActivity extends AppCompatActivity {
         btn_wrapped = findViewById(R.id.btn_wrapped_page);
         recyclerView = findViewById(R.id.wrappedList);
         btn_logout = findViewById(R.id.logout);
+        profileImage = findViewById(R.id.profileImage);
 
         wrappedAdapter = new WrappedAdapter(this, wrappedItemList);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(wrappedAdapter);
 
-        final Request request = new Request.Builder()
-                .url("https://api.spotify.com/v1/me")
-                .addHeader("Authorization", "Bearer " + mAccessToken)
-                .build();
-        try {
-            JSONObject jsonResponse = api.makeRequest(request);
-            db.storeUserProfile(jsonResponse);
-        } catch (JSONException e) {
-            Log.d("JSON", "Failed to parse data: " + e);
-        }
 
 //        username = db.get
 //        usernameTextView.setText(ussername);
+
+//        output = db.makeRequest("profile_info");
+
+        String img_url = "https://image-cdn-ak.spotifycdn.com/image/ab67706c0000da8463bcdace67f79859e30a17fa";
+        JSONObject info = JSONStorageManager.loadData(getApplicationContext(), "profile_info");
+        try {
+            usernameTextView.setText(info.getString("display_name"));
+        } catch (JSONException e) {
+            e.printStackTrace();
+            // Handle the exception, such as setting a default text or showing an error message
+        }
+
+        try {
+            if (info.getJSONArray("images").length() > 0) {
+                img_url = info.getJSONArray("images").getJSONObject(1).getString("url");
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+            // Handle the exception, such as setting a default value for img_url or showing an error message
+        }
+
+
+        Picasso.get().load(img_url).into(profileImage);
+
 
         btn_wrapped.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-
-
+                Map<String, Object> wrapped = api.makeWrapped(mAccessToken);
                 String date = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
                 String username = "Username";
                 wrappedAdapter.addItem(username, date);
