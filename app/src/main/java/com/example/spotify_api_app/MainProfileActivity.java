@@ -138,7 +138,7 @@ public class MainProfileActivity extends AppCompatActivity {
         btn_logout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                logoutUser();
+                performLogout(null);
             }
         });
 
@@ -166,11 +166,11 @@ public class MainProfileActivity extends AppCompatActivity {
         });
     }
 
-    public void logoutUser() {
-        performLogout();
+    public void logoutUser(View view) {
+        performLogout(view);
     }
 
-    private void performLogout() {
+    private void performLogout(View view) {
         sharedPreferences = getSharedPreferences("loginPrefs", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.clear();
@@ -198,7 +198,7 @@ public class MainProfileActivity extends AppCompatActivity {
                                        }
                                    }
                                 });
-                        performLogout();
+                        performLogout(null);
                         finish();
                     }
                 })
