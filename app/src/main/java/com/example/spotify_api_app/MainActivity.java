@@ -129,7 +129,8 @@ public class MainActivity extends AppCompatActivity {
             editor.putString("accessTokenData", json);
             editor.apply();
 
-            saveAccessTokenDataToFirebase(accessTokenData);
+            db.saveAccessTokenDataToFirebase(accessTokenData);
+            navigateToMainProfileActivity();
 
         } else {
             Log.e("AccessToken", "Access code or access token is null");
@@ -150,18 +151,22 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-    private void saveAccessTokenDataToFirebase(AccessTokenData accessTokenData) {
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference myRef = database.getReference("users");
+//    private void saveAccessTokenDataToFirebase(AccessTokenData accessTokenData) {
+//        FirebaseDatabase database = FirebaseDatabase.getInstance();
+//        DatabaseReference myRef = database.getReference("users");
+//
+//        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+//        if (user != null) {
+//            String userId = user.getUid();
+//            myRef.child(userId).setValue(accessTokenData);
+//        } else {
+//            Log.e("Firebase", "User not logged in");
+//        }
+//    }
 
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if (user != null) {
-            String userId = user.getUid();
-            myRef.child(userId).setValue(accessTokenData);
-        } else {
-            Log.e("Firebase", "User not logged in");
-        }
+    private void navigateToMainProfileActivity() {
+        Intent intent = new Intent(MainActivity.this, MainProfileActivity.class);
+        startActivity(intent);
+        finish();
     }
-
-
 }
