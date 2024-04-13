@@ -166,7 +166,7 @@ public class MainProfileActivity extends AppCompatActivity {
         });
     }
 
-    private void logoutUser() {
+    public void logoutUser() {
         sharedPreferences = getSharedPreferences("loginPrefs", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.clear();
