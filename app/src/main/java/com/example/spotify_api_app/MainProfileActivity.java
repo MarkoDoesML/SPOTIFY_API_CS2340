@@ -96,6 +96,7 @@ public class MainProfileActivity extends AppCompatActivity {
         btn_wrapped = findViewById(R.id.btn_wrapped_page);
         recyclerView = findViewById(R.id.wrappedList);
         btn_logout = findViewById(R.id.logout);
+        Button btn_change_login_info = findViewById(R.id.btn_change_login_info);
         Button btn_delete_account = findViewById(R.id.btn_delete_account);
 
         wrappedAdapter = new WrappedAdapter(this, wrappedItemList);
@@ -126,7 +127,14 @@ public class MainProfileActivity extends AppCompatActivity {
                 wrappedItemList = new ArrayList<>();
             }
         });
-
+        // Set onClickListener for Change Login Information
+        btn_change_login_info.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent changeLoginIntent = new Intent(MainProfileActivity.this, changeLoginInfoActivity.class);
+                startActivity(changeLoginIntent);
+            }
+        });
         btn_logout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -164,10 +172,10 @@ public class MainProfileActivity extends AppCompatActivity {
         editor.clear();
         editor.apply();
 
-        mAuth.signOut(); // Sign out the user from Firebase
+        mAuth.signOut();
         Intent intent = new Intent(MainProfileActivity.this, LoginActivity.class);
-        startActivity(intent); // Navigate to LoginActivity
-        finish(); // Close the current activity
+        startActivity(intent);
+        finish();
     }
    private void deleteAccount() {
         new AlertDialog.Builder(this)
@@ -187,7 +195,7 @@ public class MainProfileActivity extends AppCompatActivity {
                                    }
                                 });
                         logoutUser();
-                        finish(); // Close the current activity_main_profile
+                        finish();
                     }
                 })
                 .setNegativeButton("Cancel", null)
