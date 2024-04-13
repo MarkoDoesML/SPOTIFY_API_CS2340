@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -31,6 +32,10 @@ import java.util.Locale;
 import okhttp3.Request;
 
 public class MainProfileActivity extends AppCompatActivity {
+
+    String duration;
+    boolean isPublic;
+    int START_POPUP_ACTIVITY = 1;
     Button btn_wrapped;
     TextView textViewUsername;
     RecyclerView recyclerView;
@@ -88,21 +93,10 @@ public class MainProfileActivity extends AppCompatActivity {
         btn_wrapped.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                String date = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
-//                String username = "Username";
-//                wrappedAdapter.addItem(username, date);
-//                wrappedItemList = new ArrayList<>();
-                try {
-                    JSONObject jsonObject = api.makeRequest(userProfileRequest);
-                    if (jsonObject != null) {
-                        String username = jsonObject.getString("display_name");
-                    }
-                    String date = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
-                    jsonObject = api.makeRequest(topArtistsRequest);
-                } catch (JSONException e) {
-                    Log.d("JSON", "Failed to parse data: " + e);
-                }
+                Intent i = new Intent(MainProfileActivity.this, DurationPopUpActivity.class);
+                startActivityForResult(i, 1);
             }
+
         });
 
         // Logic for Bottom Nav Bar
@@ -119,5 +113,26 @@ public class MainProfileActivity extends AppCompatActivity {
                 return false;
             }
         });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == START_POPUP_ACTIVITY) {
+            if (resultCode == Activity.RESULT_OK){
+                duration = data.getStringExtra("duration");
+                isPublic = data.getBooleanExtra("public", false);
+                Log.d("Duration", "Duration: " + duration);
+                Log.d("Visibility", "Public: " + isPublic);
+                String date = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
+                String username = "Username";
+                wrappedAdapter.addItem(username, date);
+                wrappedItemList = new ArrayList<>();
+            }
+            if (resultCode == Activity.RESULT_CANCELED) {
+                // Do nothing
+            }
+        }
     }
 }

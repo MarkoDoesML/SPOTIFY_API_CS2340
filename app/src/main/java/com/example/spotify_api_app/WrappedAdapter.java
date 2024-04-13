@@ -44,8 +44,8 @@ public class WrappedAdapter extends RecyclerView.Adapter<WrappedAdapter.WrappedV
         return wrappedList.size();
     }
 
-    public void addItem(String username, String date, List<Artist> artists, List<Track> tracks) {
-        wrappedList.add(new WrappedItem(username, date, artists, tracks));
+    public void addItem(String username, String date) {
+        wrappedList.add(new WrappedItem(username, date));
         notifyItemInserted(wrappedList.size() - 1);
     }
 

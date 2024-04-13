@@ -4,7 +4,6 @@
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
-
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -15,29 +14,30 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.SPOTIFY_API_APP"
         tools:targetApi="31">
-
+        <activity
+            android:name=".DurationPopUpActivity"
+            android:exported="false" />
         <activity
             android:name=".MainProfileActivity"
             android:exported="true" />
-
         <activity
             android:name=".LoginActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
-        <!-- Main Activity with Spotify auth intent filter -->
+        </activity> <!-- Main Activity with Spotify auth intent filter -->
         <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
-                <data android:host="auth" android:scheme="com.example.spotify-api-app"/>
+                <data
+                    android:host="auth"
+                    android:scheme="com.example.spotify-api-app" />
             </intent-filter>
         </activity>
-
-
         <activity
             android:name=".WrappedActivity"
             android:exported="false" />
@@ -53,6 +53,6 @@
         <activity
             android:name=".FeedActivity"
             android:exported="false" />
-
     </application>
+
 </manifest>
