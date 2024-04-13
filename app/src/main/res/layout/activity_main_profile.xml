@@ -58,16 +58,24 @@
                     android:paddingEnd="8dp"
                     android:paddingTop="4dp"
                     android:paddingBottom="4dp" />
+                <Button
+                    android:id="@+id/btn_delete_account"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Delete Account"
+                    android:layout_alignParentBottom="true"
+                    android:layout_alignParentEnd="true"
+                    android:background="@android:color/holo_red_light"
+                    android:textColor="@android:color/white"
+                    android:padding="16dp"/>
+
+
+
+
 
             </RelativeLayout>
 
-            <Button
-                android:id="@+id/btn_wrapped_page"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:backgroundTint="@color/dark_gray"
-                android:text="New Wrapped" />
+
         </LinearLayout>
 
 
@@ -80,6 +88,13 @@
         android:orientation="vertical"
         android:padding="16dp">
 
+        <Button
+            android:id="@+id/btn_wrapped_page"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:backgroundTint="@color/dark_gray"
+            android:text="New Wrapped" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -97,7 +112,9 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="24dp"
             android:orientation="horizontal" />
+
     </LinearLayout>
+
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavigation"

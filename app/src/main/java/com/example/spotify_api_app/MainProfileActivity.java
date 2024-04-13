@@ -5,12 +5,15 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.text.SimpleDateFormat;
@@ -36,6 +39,7 @@ import android.util.Log;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.google.firebase.auth.FirebaseUser;
 import com.spotify.sdk.android.auth.AuthorizationClient;
 import com.spotify.sdk.android.auth.AuthorizationRequest;
 import com.spotify.sdk.android.auth.AuthorizationResponse;
@@ -49,7 +53,13 @@ import org.json.JSONObject;
 import okhttp3.Request;
 
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
+import android.content.DialogInterface;
+import android.widget.Toast;
+import androidx.appcompat.app.AlertDialog;
+import androidx.annotation.NonNull;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+
 
 public class MainProfileActivity extends AppCompatActivity {
     private SharedPreferences sharedPreferences;
@@ -86,6 +96,7 @@ public class MainProfileActivity extends AppCompatActivity {
         btn_wrapped = findViewById(R.id.btn_wrapped_page);
         recyclerView = findViewById(R.id.wrappedList);
         btn_logout = findViewById(R.id.logout);
+        Button btn_delete_account = findViewById(R.id.btn_delete_account);
 
         wrappedAdapter = new WrappedAdapter(this, wrappedItemList);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -102,8 +113,6 @@ public class MainProfileActivity extends AppCompatActivity {
             Log.d("JSON", "Failed to parse data: " + e);
         }
 
-//        username = db.get
-//        usernameTextView.setText(ussername);
 
         btn_wrapped.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -122,6 +131,14 @@ public class MainProfileActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 logoutUser();
+            }
+        });
+
+        // Set up onClickListener for the Delete Account button
+        btn_delete_account.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                deleteAccount();
             }
         });
 
@@ -152,4 +169,29 @@ public class MainProfileActivity extends AppCompatActivity {
         startActivity(intent); // Navigate to LoginActivity
         finish(); // Close the current activity
     }
+   private void deleteAccount() {
+        new AlertDialog.Builder(this)
+                .setTitle("Confirm Account Deletion")
+                .setMessage("Are you sure you want to delete your account? This cannot be undone.")
+                .setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                    FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                       user.delete()
+                                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task) {
+                                        if (task.isSuccessful()) {
+                                            Log.d("deleteUser()", "User account deleted.");
+                                       }
+                                   }
+                                });
+                        logoutUser();
+                        finish(); // Close the current activity_main_profile
+                    }
+                })
+                .setNegativeButton("Cancel", null)
+                .show();
+    }
+
 }
