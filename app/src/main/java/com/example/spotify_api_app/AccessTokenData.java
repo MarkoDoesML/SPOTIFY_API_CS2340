@@ -15,7 +15,6 @@ public class AccessTokenData {
     }
 
     // Getters and setters
-
     public String getAccessCode() {
         return accessCode;
     }

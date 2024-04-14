@@ -4,17 +4,24 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
+import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.navigation.NavigationBarView;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -72,8 +79,12 @@ import com.google.android.gms.tasks.Task;
 public class MainProfileActivity extends AppCompatActivity {
     private SharedPreferences sharedPreferences;
     private FirebaseAuth mAuth;
-
+  
+    String duration;
+    boolean isPublic;
+    int START_POPUP_ACTIVITY = 1;
     Button btn_wrapped;
+    TextView textViewUsername;
     Button btn_logout;
     RecyclerView recyclerView;
     WrappedAdapter wrappedAdapter;
@@ -104,6 +115,7 @@ public class MainProfileActivity extends AppCompatActivity {
         mAccessToken = accessTokenData.getAccessToken();
 
         btn_wrapped = findViewById(R.id.btn_wrapped_page);
+        textViewUsername = findViewById(R.id.username);
         recyclerView = findViewById(R.id.wrappedList);
         btn_logout = findViewById(R.id.logout);
 
@@ -130,6 +142,10 @@ public class MainProfileActivity extends AppCompatActivity {
             // Handle the exception, such as setting a default text or showing an error message
         }
 
+        wrappedAdapter = new WrappedAdapter(this, wrappedItemList);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setAdapter(wrappedAdapter);
+
         try {
             if (info.getJSONArray("images").length() > 0) {
                 img_url = info.getJSONArray("images").getJSONObject(1).getString("url");
@@ -146,13 +162,13 @@ public class MainProfileActivity extends AppCompatActivity {
         btn_wrapped.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Intent i = new Intent(MainProfileActivity.this, DurationPopUpActivity.class);
+                startActivityForResult(i, 1);
 
-                Map<String, Object> wrapped = api.makeWrapped(mAccessToken);
-                String date = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
-                String username = "Username";
-                wrappedAdapter.addItem(username, date);
-                wrappedItemList = new ArrayList<>();
+
+
             }
+
         });
         // Set onClickListener for Change Login Information
         btn_change_login_info.setOnClickListener(new View.OnClickListener() {
@@ -193,6 +209,27 @@ public class MainProfileActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == START_POPUP_ACTIVITY) {
+            if (resultCode == Activity.RESULT_OK){
+                duration = data.getStringExtra("duration");
+                isPublic = data.getBooleanExtra("public", false);
+                Log.d("Duration", "Duration: " + duration);
+                Log.d("Visibility", "Public: " + isPublic);
+                String date = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
+                String username = "Username";
+                Map<String, Object> wrapped = api.makeWrapped(mAccessToken);
+                wrappedAdapter.addItem(username, date);
+                wrappedItemList = new ArrayList<>();
+            }
+            if (resultCode == Activity.RESULT_CANCELED) {
+                // Do nothing
+            }
+        }
+    }
     public void logoutUser(View view) {
         performLogout(view);
     }

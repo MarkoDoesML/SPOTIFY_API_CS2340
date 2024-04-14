@@ -1,4 +1,7 @@
 package com.example.spotify_api_app;
+
+import java.util.List;
+
 public class WrappedItem {
     private String username;
     private String date;
@@ -23,5 +26,6 @@ public class WrappedItem {
     public void setDate(String date) {
         this.date = date;
     }
+
 }
 

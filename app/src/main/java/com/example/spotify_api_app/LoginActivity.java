@@ -88,7 +88,6 @@ public class LoginActivity extends AppCompatActivity {
     private void loginUserWithFirebase() {
         String email = etUsername.getText().toString().trim();
         String password = etPassword.getText().toString().trim();
-
         if (email.isEmpty() || password.isEmpty()) {
             Toast.makeText(LoginActivity.this, "Please enter both email and password.", Toast.LENGTH_SHORT).show();
             return;
@@ -118,7 +117,6 @@ public class LoginActivity extends AppCompatActivity {
     private void registerUserWithFirebase() {
         String email = etUsername.getText().toString().trim();
         String password = etPassword.getText().toString().trim();
-
         if (email.isEmpty() || password.isEmpty()) {
             Toast.makeText(LoginActivity.this, "Please enter an email and password to register.", Toast.LENGTH_SHORT).show();
             return;
@@ -179,7 +177,6 @@ public class LoginActivity extends AppCompatActivity {
     private void lastPart() {
         login();
     }
-
     private void navigateToMainFeedActivity() {
         Intent intent = new Intent(this, wSpotify.class);
         startActivity(intent);

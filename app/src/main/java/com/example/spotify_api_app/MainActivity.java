@@ -2,6 +2,9 @@ package com.example.spotify_api_app;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+
+import android.content.SharedPreferences;
+
 import android.os.Bundle;
 import android.content.Intent;
 import android.util.Log;
@@ -18,7 +21,21 @@ import com.google.gson.Gson;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+
+import com.google.gson.Gson;
+import java.io.IOException;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.Response;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+
+
+import okhttp3.Request;
+
 
 public class MainActivity extends AppCompatActivity {
 
@@ -40,9 +57,6 @@ public class MainActivity extends AppCompatActivity {
 
         login();
 
-
-        // TODO: fix bug with gson, it doesn't always update after login
-        // TODO: create a seperate module that has specific api requests built into it
 
         // gson storage for now, whoever is in charge of firebase needs to integrate
         // _____________________________________________________________
@@ -77,7 +91,7 @@ public class MainActivity extends AppCompatActivity {
 
             try {
                 JSONObject jsonResponse = api.makeRequest(request);
-                db.storeUserProfile(jsonResponse);
+
                 setTextAsync(jsonResponse.toString(4), output);
             } catch (JSONException e) {
                 Log.d("JSON", "Failed to parse data: " + e);
@@ -112,6 +126,10 @@ public class MainActivity extends AppCompatActivity {
             SharedPreferences.Editor editor = sharedPreferences.edit();
             editor.putString("accessTokenData", json);
             editor.apply();
+
+            db.saveAccessTokenDataToFirebase(accessTokenData);
+            navigateToMainProfileActivity();
+
         } else {
             Log.e("AccessToken", "Access code or access token is null");
         }
@@ -127,5 +145,26 @@ public class MainActivity extends AppCompatActivity {
     protected void onDestroy() {
         api.cancelCall();
         super.onDestroy();
+    }
+
+
+
+//    private void saveAccessTokenDataToFirebase(AccessTokenData accessTokenData) {
+//        FirebaseDatabase database = FirebaseDatabase.getInstance();
+//        DatabaseReference myRef = database.getReference("users");
+//
+//        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+//        if (user != null) {
+//            String userId = user.getUid();
+//            myRef.child(userId).setValue(accessTokenData);
+//        } else {
+//            Log.e("Firebase", "User not logged in");
+//        }
+//    }
+
+    private void navigateToMainProfileActivity() {
+        Intent intent = new Intent(MainActivity.this, MainProfileActivity.class);
+        startActivity(intent);
+        finish();
     }
 }
