@@ -18,8 +18,6 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import org.json.JSONException;
@@ -79,8 +77,6 @@ public class MainProfileActivity extends AppCompatActivity {
     int START_POPUP_ACTIVITY = 1;
     Button btn_wrapped;
     TextView textViewUsername;
-
-    Button btn_wrapped;
     Button btn_logout;
     RecyclerView recyclerView;
     WrappedAdapter wrappedAdapter;
@@ -114,9 +110,6 @@ public class MainProfileActivity extends AppCompatActivity {
         btn_logout = findViewById(R.id.logout);
         Button btn_change_login_info = findViewById(R.id.btn_change_login_info);
         Button btn_delete_account = findViewById(R.id.btn_delete_account);
-
-        database = FirebaseFirestore.getInstance();
-        mReference = FirebaseDatabase.getInstance().getReference();
 
         final Request userProfileRequest = new Request.Builder()
                 .url("https://api.spotify.com/v1/me")

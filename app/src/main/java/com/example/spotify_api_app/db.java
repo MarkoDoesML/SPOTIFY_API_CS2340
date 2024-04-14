@@ -175,7 +175,6 @@ public class db {
         if (user != null) {
             String userId = user.getUid();
             myRef.child(userId).setValue(accessTokenData);
-            MainProfileActivity.accessTokenData = accessTokenData;
         } else {
             Log.e("Firebase", "User not logged in");
         }
