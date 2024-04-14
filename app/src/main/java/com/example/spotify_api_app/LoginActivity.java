@@ -89,50 +89,61 @@ public class LoginActivity extends AppCompatActivity {
         String email = etUsername.getText().toString().trim();
         String password = etPassword.getText().toString().trim();
 
-        if (!email.isEmpty() && !password.isEmpty()) {
-            mAuth.signInWithEmailAndPassword(email, password)
-                    .addOnCompleteListener(this, task -> {
-                        if (task.isSuccessful()) {
-                            Log.d("Login", "signInWithEmail:success");
-                            SharedPreferences.Editor editor = sharedPreferences.edit();
-                            editor.putString("username", email);
-                            editor.apply();
-                            navigateToMainFeedActivity();
-                        } else {
-                            Log.w("Login", "signInWithEmail:failure", task.getException());
-                            Toast.makeText(LoginActivity.this, "Authentication failed.",
-                                    Toast.LENGTH_SHORT).show();
-                        }
-                    });
-        } else {
-            Toast.makeText(LoginActivity.this, "Please enter both email and password", Toast.LENGTH_SHORT).show();
+        if (email.isEmpty() || password.isEmpty()) {
+            Toast.makeText(LoginActivity.this, "Please enter both email and password.", Toast.LENGTH_SHORT).show();
+            return;
         }
+
+        mAuth.signInWithEmailAndPassword(email, password)
+                .addOnCompleteListener(this, task -> {
+                    if (task.isSuccessful()) {
+                        Log.d("Login", "signInWithEmail:success");
+                        SharedPreferences.Editor editor = sharedPreferences.edit();
+                        editor.putString("username", email);
+                        editor.apply();
+                        navigateToMainFeedActivity();
+                    } else {
+                        String errorMessage = "Authentication failed.";
+                        try {
+                            throw task.getException();
+                        } catch(Exception e) {
+                            errorMessage = e.getMessage();
+                        }
+                        Toast.makeText(LoginActivity.this, errorMessage, Toast.LENGTH_LONG).show();
+                    }
+                });
     }
+
 
     private void registerUserWithFirebase() {
         String email = etUsername.getText().toString().trim();
         String password = etPassword.getText().toString().trim();
 
-        if (!email.isEmpty() && !password.isEmpty()) {
-            mAuth.createUserWithEmailAndPassword(email, password)
-                    .addOnCompleteListener(this, task -> {
-                        if (task.isSuccessful()) {
-                            Log.d("SignUp", "createUserWithEmail:success");
-                            SharedPreferences.Editor editor = sharedPreferences.edit();
-                            editor.putString("username", email);
-                            editor.apply();
-                            navigateToMainFeedActivity();
-                        } else {
-                            Log.w("SignUp", "createUserWithEmail:failure", task.getException());
-                            Toast.makeText(LoginActivity.this, "Registration failed.",
-                                    Toast.LENGTH_SHORT).show();
-                        }
-                    });
-        } else {
-            Toast.makeText(LoginActivity.this, "Please enter an email and password to register.",
-                    Toast.LENGTH_SHORT).show();
+        if (email.isEmpty() || password.isEmpty()) {
+            Toast.makeText(LoginActivity.this, "Please enter an email and password to register.", Toast.LENGTH_SHORT).show();
+            return;
         }
+
+        mAuth.createUserWithEmailAndPassword(email, password)
+                .addOnCompleteListener(this, task -> {
+                    if (task.isSuccessful()) {
+                        Log.d("SignUp", "createUserWithEmail:success");
+                        SharedPreferences.Editor editor = sharedPreferences.edit();
+                        editor.putString("username", email);
+                        editor.apply();
+                        navigateToMainFeedActivity();
+                    } else {
+                        String errorMessage = "Registration failed.";
+                        try {
+                            throw task.getException();
+                        } catch(Exception e) {
+                            errorMessage = e.getMessage();  // Firebase specific error message
+                        }
+                        Toast.makeText(LoginActivity.this, errorMessage, Toast.LENGTH_LONG).show();
+                    }
+                });
     }
+
 
 
     public void login() {
