@@ -29,6 +29,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -65,8 +66,7 @@ public class MainProfileActivity extends AppCompatActivity {
     private SharedPreferences sharedPreferences;
     private FirebaseAuth mAuth;
 
-    Button btn_wrapped;
-    Button btn_logout;
+    Button btn_wrapped, btn_logout;
     RecyclerView recyclerView;
     WrappedAdapter wrappedAdapter;
     List<WrappedItem> wrappedItemList = new ArrayList<>();
@@ -97,11 +97,18 @@ public class MainProfileActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.wrappedList);
         btn_logout = findViewById(R.id.logout);
         Button btn_change_login_info = findViewById(R.id.btn_change_login_info);
-        Button btn_delete_account = findViewById(R.id.btn_delete_account);
+        ImageButton btn_delete_account = findViewById(R.id.btn_delete_account);
 
         wrappedAdapter = new WrappedAdapter(this, wrappedItemList);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(wrappedAdapter);
+        wrappedAdapter.setOnClickListener(new WrappedAdapter.OnClickListener() {
+            @Override
+            public void onClick(int position, WrappedItem wrappedItem) {
+                Intent intent = new Intent(MainProfileActivity.this, WrappedActivity.class);
+                startActivity(intent);
+            }
+        });
 
         final Request request = new Request.Builder()
                 .url("https://api.spotify.com/v1/me")
@@ -181,6 +188,7 @@ public class MainProfileActivity extends AppCompatActivity {
         startActivity(intent);
         finish();
     }
+
    private void deleteAccount() {
         new AlertDialog.Builder(this)
                 .setTitle("Confirm Account Deletion")

@@ -41,31 +41,6 @@ public class MainActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_main);
 
-        artistImage1 = findViewById(R.id.artistImage1);
-        artistImage2 = findViewById(R.id.artistImage2);
-
-        List<Integer> imageResources = new ArrayList<>();
-        imageResources.add(R.drawable.bob_marley);
-        imageResources.add(R.drawable.ed_sheeran);
-        imageResources.add(R.drawable.jimi_hendrix);
-        imageResources.add(R.drawable.johnny_cash);
-        imageResources.add(R.drawable.eminem);
-        imageResources.add(R.drawable.j_cole);
-        imageResources.add(R.drawable.michael_jackson);
-        imageResources.add(R.drawable.taylor_swift);
-
-        Collections.shuffle(imageResources);
-
-        artistImage1.setImageResource(imageResources.get(0));
-        artistImage2.setImageResource(imageResources.get(1));
-
-        // Ensure that the images are different
-        while (imageResources.get(0).equals(imageResources.get(1))) {
-            Collections.shuffle(imageResources);
-            artistImage1.setImageResource(imageResources.get(0));
-            artistImage2.setImageResource(imageResources.get(1));
-        }
-
         Button loginBtn = (Button) findViewById(R.id.login);
         Button testBtn = (Button) findViewById(R.id.test);
         output = (TextView) findViewById(R.id.output);
