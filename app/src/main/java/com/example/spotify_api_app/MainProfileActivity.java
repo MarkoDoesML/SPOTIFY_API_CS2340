@@ -5,12 +5,16 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.app.Activity;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.text.SimpleDateFormat;
@@ -18,6 +22,10 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import com.squareup.picasso.Picasso;
+
 
 import android.content.Context;
 import android.content.Intent;
@@ -26,6 +34,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -35,6 +44,10 @@ import android.content.Intent;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.TextView;
+
+import com.google.firebase.firestore.DocumentSnapshot;
+
+import com.google.firebase.auth.FirebaseUser;
 
 import com.spotify.sdk.android.auth.AuthorizationClient;
 import com.spotify.sdk.android.auth.AuthorizationRequest;
@@ -49,12 +62,20 @@ import org.json.JSONObject;
 import okhttp3.Request;
 
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
+import android.content.DialogInterface;
+import android.widget.Toast;
+import androidx.appcompat.app.AlertDialog;
+import androidx.annotation.NonNull;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+
 
 public class MainProfileActivity extends AppCompatActivity {
     private SharedPreferences sharedPreferences;
     private FirebaseAuth mAuth;
-
+    String duration;
+    boolean isPublic;
+    int START_POPUP_ACTIVITY = 1;
     Button btn_wrapped;
     Button btn_logout;
     RecyclerView recyclerView;
@@ -65,9 +86,11 @@ public class MainProfileActivity extends AppCompatActivity {
     private String mAccessToken, mAccessCode;
     TextView usernameTextView;
     String username;
+    CompletableFuture<DocumentSnapshot> output;
+    private ImageView profileImage;
     @Override
 
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_profile);
 
@@ -87,41 +110,70 @@ public class MainProfileActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.wrappedList);
         btn_logout = findViewById(R.id.logout);
 
+        profileImage = findViewById(R.id.profileImage);
+
+        Button btn_change_login_info = findViewById(R.id.btn_change_login_info);
+        Button btn_delete_account = findViewById(R.id.btn_delete_account);
+
+
         wrappedAdapter = new WrappedAdapter(this, wrappedItemList);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(wrappedAdapter);
 
-        final Request request = new Request.Builder()
-                .url("https://api.spotify.com/v1/me")
-                .addHeader("Authorization", "Bearer " + mAccessToken)
-                .build();
+
+
+//        output = db.makeRequest("profile_info");
+
+        String img_url = "https://image-cdn-ak.spotifycdn.com/image/ab67706c0000da8463bcdace67f79859e30a17fa";
+        JSONObject info = JSONStorageManager.loadData(getApplicationContext(), "profile_info");
         try {
-            JSONObject jsonResponse = api.makeRequest(request);
-            db.storeUserProfile(jsonResponse);
+            usernameTextView.setText(info.getString("display_name"));
         } catch (JSONException e) {
-            Log.d("JSON", "Failed to parse data: " + e);
+            e.printStackTrace();
+            // Handle the exception, such as setting a default text or showing an error message
         }
 
-//        username = db.get
-//        usernameTextView.setText(ussername);
+        try {
+            if (info.getJSONArray("images").length() > 0) {
+                img_url = info.getJSONArray("images").getJSONObject(1).getString("url");
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+            // Handle the exception, such as setting a default value for img_url or showing an error message
+        }
+
+
+        Picasso.get().load(img_url).into(profileImage);
+
 
         btn_wrapped.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Intent i = new Intent(MainProfileActivity.this, DurationPopUpActivity.class);
+                startActivityForResult(i, 1);
 
-
-
-                String date = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
-                String username = "Username";
-                wrappedAdapter.addItem(username, date);
-                wrappedItemList = new ArrayList<>();
             }
         });
-
+        // Set onClickListener for Change Login Information
+        btn_change_login_info.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent changeLoginIntent = new Intent(MainProfileActivity.this, changeLoginInfoActivity.class);
+                startActivity(changeLoginIntent);
+            }
+        });
         btn_logout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                logoutUser();
+                performLogout(null);
+            }
+        });
+        //test to commit again
+        // Set up onClickListener for the Delete Account button
+        btn_delete_account.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                deleteAccount();
             }
         });
 
@@ -141,15 +193,66 @@ public class MainProfileActivity extends AppCompatActivity {
         });
     }
 
-    private void logoutUser() {
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == START_POPUP_ACTIVITY) {
+            if (resultCode == Activity.RESULT_OK){
+                duration = data.getStringExtra("duration");
+                isPublic = data.getBooleanExtra("public", false);
+                Log.d("Duration", "Duration: " + duration);
+                Log.d("Visibility", "Public: " + isPublic);
+                String date = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
+                String username = "Username";
+                Map<String, Object> wrapped = api.makeWrapped(mAccessToken);
+                wrappedAdapter.addItem(username, date);
+                wrappedItemList = new ArrayList<>();
+            }
+            if (resultCode == Activity.RESULT_CANCELED) {
+                // Do nothing
+            }
+        }
+    }
+
+    public void logoutUser(View view) {
+        performLogout(view);
+    }
+
+    private void performLogout(View view) {
         sharedPreferences = getSharedPreferences("loginPrefs", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.clear();
         editor.apply();
 
-        mAuth.signOut(); // Sign out the user from Firebase
+        mAuth.signOut();
         Intent intent = new Intent(MainProfileActivity.this, LoginActivity.class);
-        startActivity(intent); // Navigate to LoginActivity
-        finish(); // Close the current activity
+        startActivity(intent);
+        finish();
     }
+   private void deleteAccount() {
+        new AlertDialog.Builder(this)
+                .setTitle("Confirm Account Deletion")
+                .setMessage("Are you sure you want to delete your account? This cannot be undone.")
+                .setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                    FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                       user.delete()
+                                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task) {
+                                        if (task.isSuccessful()) {
+                                            Log.d("deleteUser()", "User account deleted.");
+                                       }
+                                   }
+                                });
+                        performLogout(null);
+                        finish();
+                    }
+                })
+                .setNegativeButton("Cancel", null)
+                .show();
+    }
+
 }

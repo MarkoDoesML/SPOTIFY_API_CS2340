@@ -5,6 +5,7 @@ import android.content.Context;
 import android.net.Uri;
 import android.util.Log;
 
+import com.google.gson.Gson;
 import com.spotify.sdk.android.auth.AuthorizationClient;
 import com.spotify.sdk.android.auth.AuthorizationRequest;
 import com.spotify.sdk.android.auth.AuthorizationResponse;
@@ -13,7 +14,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Base64;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -41,13 +46,14 @@ public class api {
      * @param type the type of the request
      * @return the authentication request
      */
-    public static AuthorizationRequest getAuth(AuthorizationResponse.Type type) {
-        return new AuthorizationRequest.Builder(CLIENT_ID, type, getRedirectUri().toString())
-                .setShowDialog(false)
-                .setScopes(new String[] { "user-read-email", "user-top-read" }) // <--- Change the scope of your requested token here
-                .setCampaign("your-campaign-token")
-                .build();
-    }
+   public static AuthorizationRequest getAuth(AuthorizationResponse.Type type) {
+    return new AuthorizationRequest.Builder(CLIENT_ID, type, getRedirectUri().toString())
+            .setShowDialog(false)
+            .setScopes(new String[] { "user-read-email", "user-top-read" }) // Keep these scopes from the recommended_artist branch
+            .setCampaign("your-campaign-token")
+            .build();
+}
+
 
 
     public static void login(Activity activity) {
@@ -241,4 +247,92 @@ public class api {
     }
 
 
+    public static Map<String, Object> addToWrapped(JSONObject json, String type, Map<String, Object> wrap) throws JSONException{
+
+        if (type == "artist") {
+            Map<String, Object> userTopArtists = new HashMap<>();
+
+            for (int i = 0; i < 5 && i < json.getJSONArray("items").length(); i++) {
+                // Create inner map for specific artist
+                Map<String, Object> topArtist = new HashMap<>();
+
+                // Put artists name in inner map
+                topArtist.put("name", json.getJSONArray("items").getJSONObject(i).getString("name"));
+
+                // Put artists image (if applicable) in inner map
+                if (json.getJSONArray("items").getJSONObject(i).getJSONArray("images").length() > 0) {
+                    topArtist.put("image", json.getJSONArray("items").getJSONObject(i).getJSONArray("images").getJSONObject(0).getString("url"));
+                } else {
+                    topArtist.put("image", null);
+                }
+
+                // Put specific artist into top artist map
+                userTopArtists.put("artist" + (i + 1), topArtist);
+
+            }
+            wrap.put("artists", userTopArtists);
+        } else {
+            Map<String, Object> userTopTracks = new HashMap<>();
+
+            // Iterate through top tracks to get top 5 tracks
+            for (int i = 0; i < 5 && i < json.getJSONArray("items").length(); i++) {
+                // Create inner map to store specific track's information
+                Map<String, Object> topTrack = new HashMap<>();
+
+                // Put track's name into inner map
+                topTrack.put("name", json.getJSONArray("items").getJSONObject(i).getString("name"));
+
+                // Put track's image, if applicable, into inner map
+                if (json.getJSONArray("items").getJSONObject(i).getJSONObject("album").getJSONArray("images").length() > 0) {
+                    topTrack.put("image", json.getJSONArray("items").getJSONObject(i).getJSONObject("album").getJSONArray("images")
+                            .getJSONObject(0).getString("url"));
+                } else {
+                    topTrack.put("image", null);
+                }
+
+                // Put track's artists into inner map
+                List<String> trackArtists = new ArrayList<>();
+                for (int j = 0; j < json.getJSONArray("items").getJSONObject(i).getJSONArray("artists").length(); j++) {
+                    trackArtists.add(j, json.getJSONArray("items").getJSONObject(i).getJSONArray("artists").getJSONObject(j).getString("name"));
+                }
+                topTrack.put("artists", trackArtists);
+
+                // Put specific track's information in the top track information
+                userTopTracks.put("track" + (i + 1), topTrack);
+
+            }
+            wrap.put("tracks", userTopTracks);
+        }
+        return wrap;
+    }
+
+
+    public static Map<String, Object> makeWrapped(String token) {
+        Map<String, Object> wrapped = new HashMap<>();
+        final Request request = new Request.Builder()
+                .url("https://api.spotify.com/v1/me/top/artists")
+                .addHeader("Authorization", "Bearer " + token)
+                .build();
+        try {
+            JSONObject output = makeRequest(request);
+            wrapped = addToWrapped(output, "artist", wrapped);
+        } catch (Exception e) {
+            Log.d("JSON", "Failed to parse data: " + e);
+        }
+
+        final Request r = new Request.Builder()
+                .url("https://api.spotify.com/v1/me/top/tracks")
+                .addHeader("Authorization", "Bearer " + token)
+                .build();
+        try {
+            JSONObject output = makeRequest(r);
+            wrapped = addToWrapped(output, "tracks", wrapped);
+        } catch (Exception e) {
+            Log.d("JSON", "Failed to parse data: " + e);
+        }
+        return wrapped;
+    }
 }
+
+
+
