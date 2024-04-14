@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.content.Intent;
 import android.util.Log;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.spotify.sdk.android.auth.AuthorizationClient;
@@ -18,6 +19,10 @@ import com.google.gson.Gson;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import okhttp3.Request;
 
 public class MainActivity extends AppCompatActivity {
@@ -28,12 +33,14 @@ public class MainActivity extends AppCompatActivity {
 
     private TextView output;
     private AccessTokenData accessTokenData;
+    private ImageView artistImage1, artistImage2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main);
+
         Button loginBtn = (Button) findViewById(R.id.login);
         Button testBtn = (Button) findViewById(R.id.test);
         output = (TextView) findViewById(R.id.output);

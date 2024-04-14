@@ -4,8 +4,10 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -19,6 +21,7 @@ import java.util.Locale;
 public class WrappedAdapter extends RecyclerView.Adapter<WrappedAdapter.WrappedViewHolder> {
     private Context context;
     private List<WrappedItem> wrappedList;
+    private OnClickListener onClickListener;
 
     public WrappedAdapter(Context context, List<WrappedItem> wrappedList) {
         this.context = context;
@@ -34,9 +37,19 @@ public class WrappedAdapter extends RecyclerView.Adapter<WrappedAdapter.WrappedV
 
     @Override
     public void onBindViewHolder(@NonNull WrappedViewHolder holder, int position) {
-        WrappedItem item = wrappedList.get(position);
+        WrappedItem item = wrappedList.get(holder.getAdapterPosition());
         holder.usernameTextView.setText(item.getUsername());
         holder.dateTextView.setText(item.getDate());
+
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                int clickedPosition = holder.getAdapterPosition();
+                if (onClickListener != null && clickedPosition != RecyclerView.NO_POSITION) {
+                    onClickListener.onClick(clickedPosition, wrappedList.get(clickedPosition));
+                }
+            }
+        });
     }
 
     @Override
@@ -59,5 +72,14 @@ public class WrappedAdapter extends RecyclerView.Adapter<WrappedAdapter.WrappedV
             dateTextView = itemView.findViewById(R.id.date);
         }
     }
+
+    public void setOnClickListener(OnClickListener onClickListener) {
+        this.onClickListener = onClickListener;
+    }
+
+    public interface OnClickListener {
+        void onClick(int position, WrappedItem wrappedItem);
+    }
+
 }
 
