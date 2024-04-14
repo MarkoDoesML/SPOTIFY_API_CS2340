@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/light_yellow">
@@ -26,22 +27,46 @@
             android:layout_weight="1"
             android:orientation="vertical">
 
-            <RelativeLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="16dp">
-
-                <TextView
-                    android:id="@+id/username"
+                <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:fontFamily="@font/poppins_semibold"
-                    android:text="Username"
-                    android:textColor="@color/black"
-                    android:textSize="24sp" />
+                    android:orientation="horizontal">
 
+                    <TextView
+                        android:id="@+id/username"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="6dp"
+                        android:fontFamily="@font/poppins_semibold"
+                        android:text="Username"
+                        android:textColor="@color/black"
+                        android:textSize="24sp" />
 
-            </RelativeLayout>
+                    <ImageButton
+                        android:id="@+id/btn_delete_account"
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:layout_marginStart="8dp"
+                        android:background="@color/light_yellow"
+                        android:src="@android:drawable/ic_delete" />
+                </LinearLayout>
+
+            <Button
+                android:id="@+id/logout"
+                android:onClick="logoutUser"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="6dp"
+                android:text="Logout"
+                android:textSize="16sp"/>
+
+            <Button
+                android:id="@+id/btn_change_login_info"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="6dp"
+                android:text="Change Login Info"/>
+
         </LinearLayout>
     </LinearLayout>
 
@@ -51,50 +76,19 @@
         android:layout_below="@id/profileSection"
         android:orientation="vertical"
         android:padding="16dp">
-        <Button
-            android:id="@+id/btn_delete_account"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Delete Account"
-            android:layout_below="@id/username"
-            android:layout_alignParentEnd="true"
-            android:background="@android:color/holo_red_light"
-            android:textColor="@android:color/white"
-            android:padding="16dp"/>
 
-        <Button
-            android:id="@+id/logout"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Logout"
-            android:onClick="logoutUser"
-            android:layout_below="@id/btn_delete_account"
-            android:layout_alignParentEnd="true"
-            android:textSize="18sp"
-            android:padding="8dp" />
-
-        <Button
-            android:id="@+id/btn_change_login_info"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Change Login Information"
-            android:layout_below="@id/logout"
-            android:layout_alignParentEnd="true"
-            android:background="@android:color/holo_blue_dark"
-            android:textColor="@android:color/white"
-            android:padding="16dp"/>
 
         <Button
             android:id="@+id/btn_wrapped_page"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
             android:backgroundTint="@color/dark_gray"
             android:text="New Wrapped" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
             android:text="Past Wraps"
             android:textColor="@color/black"
             android:fontFamily="@font/poppins_semibold"
@@ -107,6 +101,7 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="24dp"
             android:orientation="horizontal" />
+
     </LinearLayout>
 
     <com.google.android.material.bottomnavigation.BottomNavigationView

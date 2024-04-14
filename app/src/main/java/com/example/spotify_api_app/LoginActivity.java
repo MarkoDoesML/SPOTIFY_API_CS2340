@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -31,6 +32,9 @@ import okhttp3.Request;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 
 public class LoginActivity extends AppCompatActivity {
@@ -47,11 +51,37 @@ public class LoginActivity extends AppCompatActivity {
 
     private SharedPreferences sharedPreferences;
     private FirebaseAuth mAuth;
+    private ImageView artistImage1, artistImage2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        artistImage1 = findViewById(R.id.artistImage1);
+        artistImage2 = findViewById(R.id.artistImage2);
+
+        List<Integer> imageResources = new ArrayList<>();
+        imageResources.add(R.drawable.bob_marley);
+        imageResources.add(R.drawable.ed_sheeran);
+        imageResources.add(R.drawable.jimi_hendrix);
+        imageResources.add(R.drawable.johnny_cash);
+        imageResources.add(R.drawable.eminem);
+        imageResources.add(R.drawable.j_cole);
+        imageResources.add(R.drawable.michael_jackson);
+        imageResources.add(R.drawable.taylor_swift);
+
+        Collections.shuffle(imageResources);
+
+        artistImage1.setImageResource(imageResources.get(0));
+        artistImage2.setImageResource(imageResources.get(1));
+
+        // Ensure that the images are different
+        while (imageResources.get(0).equals(imageResources.get(1))) {
+            Collections.shuffle(imageResources);
+            artistImage1.setImageResource(imageResources.get(0));
+            artistImage2.setImageResource(imageResources.get(1));
+        }
 
         mAuth = FirebaseAuth.getInstance();
 
