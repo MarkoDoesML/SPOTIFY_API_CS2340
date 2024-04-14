@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.app.Activity;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -72,7 +73,9 @@ import com.google.android.gms.tasks.Task;
 public class MainProfileActivity extends AppCompatActivity {
     private SharedPreferences sharedPreferences;
     private FirebaseAuth mAuth;
-
+    String duration;
+    boolean isPublic;
+    int START_POPUP_ACTIVITY = 1;
     Button btn_wrapped;
     Button btn_logout;
     RecyclerView recyclerView;
@@ -146,12 +149,9 @@ public class MainProfileActivity extends AppCompatActivity {
         btn_wrapped.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Intent i = new Intent(MainProfileActivity.this, DurationPopUpActivity.class);
+                startActivityForResult(i, 1);
 
-                Map<String, Object> wrapped = api.makeWrapped(mAccessToken);
-                String date = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
-                String username = "Username";
-                wrappedAdapter.addItem(username, date);
-                wrappedItemList = new ArrayList<>();
             }
         });
         // Set onClickListener for Change Login Information
@@ -191,6 +191,28 @@ public class MainProfileActivity extends AppCompatActivity {
                 return false;
             }
         });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == START_POPUP_ACTIVITY) {
+            if (resultCode == Activity.RESULT_OK){
+                duration = data.getStringExtra("duration");
+                isPublic = data.getBooleanExtra("public", false);
+                Log.d("Duration", "Duration: " + duration);
+                Log.d("Visibility", "Public: " + isPublic);
+                String date = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
+                String username = "Username";
+                Map<String, Object> wrapped = api.makeWrapped(mAccessToken);
+                wrappedAdapter.addItem(username, date);
+                wrappedItemList = new ArrayList<>();
+            }
+            if (resultCode == Activity.RESULT_CANCELED) {
+                // Do nothing
+            }
+        }
     }
 
     public void logoutUser(View view) {
