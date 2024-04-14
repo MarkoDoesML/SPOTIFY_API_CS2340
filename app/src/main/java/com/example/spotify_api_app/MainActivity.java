@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.content.Intent;
 import android.util.Log;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.spotify.sdk.android.auth.AuthorizationClient;
@@ -18,6 +19,10 @@ import com.google.gson.Gson;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import okhttp3.Request;
 
 public class MainActivity extends AppCompatActivity {
@@ -28,12 +33,39 @@ public class MainActivity extends AppCompatActivity {
 
     private TextView output;
     private AccessTokenData accessTokenData;
+    private ImageView artistImage1, artistImage2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main);
+
+        artistImage1 = findViewById(R.id.artistImage1);
+        artistImage2 = findViewById(R.id.artistImage2);
+
+        List<Integer> imageResources = new ArrayList<>();
+        imageResources.add(R.drawable.bob_marley);
+        imageResources.add(R.drawable.ed_sheeran);
+        imageResources.add(R.drawable.jimi_hendrix);
+        imageResources.add(R.drawable.johnny_cash);
+        imageResources.add(R.drawable.eminem);
+        imageResources.add(R.drawable.j_cole);
+        imageResources.add(R.drawable.michael_jackson);
+        imageResources.add(R.drawable.taylor_swift);
+
+        Collections.shuffle(imageResources);
+
+        artistImage1.setImageResource(imageResources.get(0));
+        artistImage2.setImageResource(imageResources.get(1));
+
+        // Ensure that the images are different
+        while (imageResources.get(0).equals(imageResources.get(1))) {
+            Collections.shuffle(imageResources);
+            artistImage1.setImageResource(imageResources.get(0));
+            artistImage2.setImageResource(imageResources.get(1));
+        }
+
         Button loginBtn = (Button) findViewById(R.id.login);
         Button testBtn = (Button) findViewById(R.id.test);
         output = (TextView) findViewById(R.id.output);
