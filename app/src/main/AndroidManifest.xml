@@ -21,11 +21,8 @@
             android:label="@string/title_activity_change_login_info"
             android:theme="@style/Theme.SPOTIFY_API_APP" />
         <activity
-            android:name=".DurationPopUpActivity"
-            android:exported="false" />
-        <activity
             android:name=".MainProfileActivity"
-            android:exported="true" />
+            android:exported="false" />
         <activity
             android:name=".LoginActivity"
             android:exported="true">
@@ -34,10 +31,6 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity> <!-- Main Activity with Spotify auth intent filter -->
-        <activity
-            android:name=".MainActivity"
-            android:exported="true">
             <intent-filter>
                 <data
                     android:host="auth"
@@ -52,6 +45,9 @@
             android:exported="false" />
         <activity
             android:name=".ArtistsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".DurationPopUpActivity"
             android:exported="false" />
         <activity
             android:name=".SongsActivity"
