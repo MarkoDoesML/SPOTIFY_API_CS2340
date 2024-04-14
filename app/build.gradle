@@ -41,13 +41,13 @@ dependencies {
     implementation 'com.google.android.material:material:1.11.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     implementation 'com.google.firebase:firebase-database:20.3.1'
-    implementation 'com.google.firebase:firebase-firestore:24.11.0'
+    implementation 'com.google.firebase:firebase-firestore:24.11.1'
     implementation 'androidx.navigation:navigation-fragment:2.7.7'
     implementation 'androidx.navigation:navigation-ui:2.7.7'
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
-    
+
     implementation 'com.spotify.android:auth:2.1.1' //official method of interfacing with the Spotify API on Android and removes a lot of the complexity in authenticating requests
     implementation 'com.squareup.okhttp3:okhttp:4.9.3' //simplifies making requests to the API
 
@@ -56,16 +56,23 @@ dependencies {
 
     // When using the BoM, you don't specify versions in Firebase library dependencies
 
+    implementation 'com.google.firebase:firebase-auth'
     // Add the dependency for the Firebase SDK for Google Analytics
     implementation("com.google.firebase:firebase-analytics")
 
     implementation 'com.google.firebase:firebase-auth'
     implementation 'com.squareup.picasso:picasso:2.71828'
 
+    implementation 'com.google.android.material:material:1.2.0-alpha03'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+
+    implementation 'androidx.exifinterface:exifinterface:1.0.0'
+    implementation 'androidx.databinding:viewbinding:8.2.2'
+
 
 //    // Firestore
 //    implementation 'com.google.firebase:firebase-admin'
 
-    implementation("com.google.code.gson:gson:2.10")
+    implementation("com.google.code.gson:gson:2.10.1")
 
 }
