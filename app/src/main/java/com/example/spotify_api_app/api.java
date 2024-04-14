@@ -37,19 +37,23 @@ public class api {
 
     private static Call mCall;
 
+    // Holder for access token
+    private static String currentAccessToken;
+
     /**
      * Get authentication request
      *
      * @param type the type of the request
      * @return the authentication request
      */
-    public static AuthorizationRequest getAuth(AuthorizationResponse.Type type) {
-        return new AuthorizationRequest.Builder(CLIENT_ID, type, getRedirectUri().toString())
-                .setShowDialog(false)
-                .setScopes(new String[] { "user-top-read" }) // <--- Change the scope of your requested token here
-                .setCampaign("your-campaign-token")
-                .build();
-    }
+   public static AuthorizationRequest getAuth(AuthorizationResponse.Type type) {
+    return new AuthorizationRequest.Builder(CLIENT_ID, type, getRedirectUri().toString())
+            .setShowDialog(false)
+            .setScopes(new String[] { "user-read-email", "user-top-read" }) // Keep these scopes from the recommended_artist branch
+            .setCampaign("your-campaign-token")
+            .build();
+}
+
 
 
     public static void login(Activity activity) {
@@ -59,6 +63,11 @@ public class api {
 
     public interface TokenCallback {
         void onTokenReceived(String token);
+    }
+
+    // method to return the access token without any parameters
+    public static String getAccessToken() {
+        return currentAccessToken;
     }
 
     public static void getAccessToken(String code, TokenCallback callback) {
@@ -94,6 +103,8 @@ public class api {
             public void onResponse(Call call, Response response) throws IOException {
                 try {
                     final JSONObject jsonObject = new JSONObject(response.body().string());
+                    //Variable holder for access token
+                    currentAccessToken = jsonObject.getString("access_token");
                     String token = jsonObject.getString("access_token");
                     callback.onTokenReceived(token); // Notify callback with token
                 } catch (JSONException e) {
@@ -202,6 +213,37 @@ public class api {
 
         // Return the JSON object obtained from the callback
         return jsonObjectRef.get();
+    }
+
+    //Get recommendations method
+    public static void getRecommendations(String seedArtists, String seedGenres, String seedTracks, JsonCallback callback) {
+        String url = "https://api.spotify.com/v1/recommendations";
+
+        // Prepare URL with query parameters
+        HttpUrl.Builder urlBuilder = HttpUrl.parse(url).newBuilder();
+        if (!seedArtists.isEmpty()) urlBuilder.addQueryParameter("seed_artists", seedArtists);
+        if (!seedGenres.isEmpty()) urlBuilder.addQueryParameter("seed_genres", seedGenres);
+        if (!seedTracks.isEmpty()) urlBuilder.addQueryParameter("seed_tracks", seedTracks);
+        String requestUrl = urlBuilder.build().toString();
+
+        Request request = new Request.Builder()
+                .url(requestUrl)
+                .addHeader("Authorization", "Bearer " + getAccessToken()) // Ensure you have a method to get a fresh token
+                .build();
+
+        executeRequest(request, callback);
+    }
+
+    public static void fetchTopArtists(JsonCallback callback) {
+        String url = "https://api.spotify.com/v1/me/top/artists?limit=5"; // Fetch top 5 artists
+
+        Request request = new Request.Builder()
+                .url(url)
+                .addHeader("Authorization", "Bearer " + getAccessToken())
+                .build();
+
+        executeRequest(request, callback);
+
     }
 
 
