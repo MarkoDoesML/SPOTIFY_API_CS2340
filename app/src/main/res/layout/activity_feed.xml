@@ -32,6 +32,17 @@
             app:itemIconTint="@drawable/selector"
             app:itemTextColor="@drawable/selector"
             app:menu="@menu/bottom_navigation_menu" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/recommend_artist"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/bottomNavigation"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="11dp"
+            android:layout_marginBottom="17dp"
+            android:clickable="true"
+            app:srcCompat="@android:drawable/btn_radio" />
     </RelativeLayout>
 
 </LinearLayout>

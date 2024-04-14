@@ -11,8 +11,11 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firestore.v1.WriteResult;
 
@@ -23,12 +26,21 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicReference;
+
+import okhttp3.Request;
 
 public class db {
     // Database where the spotify data will be stored
     @SuppressLint("StaticFieldLeak")
     private static final FirebaseFirestore db = FirebaseFirestore.getInstance();
     private static final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+    static String username = user.getEmail();
+
+    // make increase wrapped number
 
     public static void storeUserProfile(JSONObject jsonObject) throws JSONException {
 
@@ -68,8 +80,10 @@ public class db {
 
     public static void storeTopArtists(JSONObject jsonObject) throws JSONException {
         // Check if passed in JSONObject is null
-        if (jsonObject == null) { Log.d("db", "JSONObject is null when trying to store user's top artist data."); return; }
+        String username = user.getEmail();
 
+        // Check if passed in JSONObject is null
+        if (jsonObject == null) { Log.d("db", "JSONObject is null when trying to store user profile data."); return; }
         // Create a map to store user's top artist information
         Map<String, Object> userTopArtists = new HashMap<>();
 
@@ -92,20 +106,20 @@ public class db {
             userTopArtists.put("artist" + (i + 1), topArtist);
         }
 
+        DocumentReference doc = db.collection(username).document("wraps");
+
         // Add user top artist information to database
-        db.collection("users")
-                .add(userTopArtists)
-                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+        doc.set(userTopArtists)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
-                    public void onSuccess(DocumentReference documentReference) {
-                        Log.d("db", "DocumentSnapshot added with ID: " + documentReference.getId());
+                    public void onSuccess(Void aVoid) {
+                        Log.d("db", "Document added to collection successfully!");
                     }
                 })
-
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        Log.d("db", "Error adding document", e);
+                        Log.e("db", "Error adding document to collection", e);
                     }
                 });
     }
@@ -162,7 +176,55 @@ public class db {
                 });
     }
 
-//    public static String getUsername() {
-//
-//    }
+    public interface FirestoreCallback {
+        void onDocumentReceived(DocumentSnapshot documentSnapshot);
+        void onFailure(Exception e);
+    }
+
+    public static CompletableFuture<DocumentSnapshot> makeRequest(String document) {
+        // Create a CompletableFuture to hold the result
+        CompletableFuture<DocumentSnapshot> future = new CompletableFuture<>();
+
+        // Call executeRequest() with a callback
+        executeRequest(document, new FirestoreCallback() {
+            @Override
+            public void onDocumentReceived(DocumentSnapshot documentSnapshot) {
+                // Complete the CompletableFuture with the obtained DocumentSnapshot
+                future.complete(documentSnapshot);
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                // Complete the CompletableFuture exceptionally if there's a failure
+                future.completeExceptionally(e);
+            }
+        });
+
+        // Return the CompletableFuture
+        return future;
+    }
+
+    public static void executeRequest(String document, FirestoreCallback callback) {
+        DocumentReference doc = db.collection(username).document(document);
+
+        doc.get()
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        if (documentSnapshot.exists()) {
+                            // Pass the DocumentSnapshot directly to the callback
+                            callback.onDocumentReceived(documentSnapshot);
+                        } else {
+                            Log.d("db", "Document does not exist: " + document);
+                        }
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        // Handle failure
+                        Log.e("db", "Error getting document", e);
+                    }
+                });
+    }
 }
