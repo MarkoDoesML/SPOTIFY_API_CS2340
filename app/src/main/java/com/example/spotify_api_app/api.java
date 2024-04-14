@@ -1,8 +1,11 @@
 package com.example.spotify_api_app;
 
+import android.app.Activity;
+import android.content.Context;
 import android.net.Uri;
 import android.util.Log;
 
+import com.spotify.sdk.android.auth.AuthorizationClient;
 import com.spotify.sdk.android.auth.AuthorizationRequest;
 import com.spotify.sdk.android.auth.AuthorizationResponse;
 
@@ -43,6 +46,11 @@ public class api {
                 .build();
     }
 
+
+    public static void login(Activity activity) {
+        final AuthorizationRequest request = getAuth(AuthorizationResponse.Type.CODE);
+        AuthorizationClient.openLoginActivity(activity, AUTH_CODE_REQUEST_CODE, request);
+    }
 
     public interface TokenCallback {
         void onTokenReceived(String token);
