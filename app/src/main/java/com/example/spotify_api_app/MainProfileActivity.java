@@ -127,7 +127,8 @@ public class MainProfileActivity extends AppCompatActivity {
         String img_url = "https://image-cdn-ak.spotifycdn.com/image/ab67706c0000da8463bcdace67f79859e30a17fa";
         JSONObject info = JSONStorageManager.loadData(getApplicationContext(), "profile_info");
         try {
-            usernameTextView.setText(info.getString("display_name"));
+            username = info.getString("display_name");
+            usernameTextView.setText(username);
         } catch (JSONException e) {
             e.printStackTrace();
             // Handle the exception, such as setting a default text or showing an error message
@@ -199,12 +200,11 @@ public class MainProfileActivity extends AppCompatActivity {
 
         if (requestCode == START_POPUP_ACTIVITY) {
             if (resultCode == Activity.RESULT_OK){
-                duration = data.getStringExtra("duration");
-                isPublic = data.getBooleanExtra("public", false);
+                String time = data.getStringExtra("duration");
+                boolean view = data.getBooleanExtra("public", false);
                 Log.d("Duration", "Duration: " + duration);
                 Log.d("Visibility", "Public: " + isPublic);
                 String date = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
-                String username = "Username";
                 Map<String, Object> wrapped = api.makeWrapped(mAccessToken);
                 wrappedAdapter.addItem(username, date);
                 wrappedItemList = new ArrayList<>();
