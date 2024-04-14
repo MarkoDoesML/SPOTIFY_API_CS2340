@@ -36,8 +36,10 @@ public class wSpotify extends AppCompatActivity{
     int AUTH_CODE_REQUEST_CODE = api.AUTH_CODE_REQUEST_CODE;
     private String mAccessToken, mAccessCode;
 
-    private TextView output;
+    public TextView output, textView;
     private AccessTokenData accessTokenData;
+
+
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -70,6 +72,28 @@ public class wSpotify extends AppCompatActivity{
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString("accessTokenData", json);
         editor.apply();
+        textView = findViewById(R.id.textView);
+        // updates spotify info
+        textView.setText("getting latest spotify info...");
+        final Request request = new Request.Builder()
+                .url("https://api.spotify.com/v1/me")
+                .addHeader("Authorization", "Bearer " + accessToken)
+                .build();
+        try {
+            JSONObject jsonResponse = api.makeRequest(request);
+            JSONStorageManager.saveData(getApplicationContext(), "profile_info", jsonResponse);
+            db.storeUserProfile(jsonResponse);
+        } catch (JSONException e) {
+            Log.d("JSON", "Failed to parse data: " + e);
+        }
+
+
+        // get user wraps
+        textView.setText("getting your previous wraps...");
+
+
+        // get all public wraps
+        textView.setText("getting other public wraps...");
 
         navigateToMainFeedActivity();
         // _____________________________________________________________
