@@ -37,15 +37,16 @@ public class WrappedAdapter extends RecyclerView.Adapter<WrappedAdapter.WrappedV
 
     @Override
     public void onBindViewHolder(@NonNull WrappedViewHolder holder, int position) {
-        WrappedItem item = wrappedList.get(position);
+        WrappedItem item = wrappedList.get(holder.getAdapterPosition());
         holder.usernameTextView.setText(item.getUsername());
         holder.dateTextView.setText(item.getDate());
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (onClickListener != null) {
-                    onClickListener.onClick(position, item);
+                int clickedPosition = holder.getAdapterPosition();
+                if (onClickListener != null && clickedPosition != RecyclerView.NO_POSITION) {
+                    onClickListener.onClick(clickedPosition, wrappedList.get(clickedPosition));
                 }
             }
         });
