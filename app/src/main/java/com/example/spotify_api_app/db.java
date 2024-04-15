@@ -4,6 +4,8 @@ package com.example.spotify_api_app;
 import static androidx.constraintlayout.helper.widget.MotionEffect.TAG;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.util.Log;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -46,13 +48,15 @@ import okhttp3.Request;
 public class db {
     // Database where the spotify data will be stored
     @SuppressLint("StaticFieldLeak")
-    private static final FirebaseFirestore db = FirebaseFirestore.getInstance();
-    private static final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-
-    static String username = user.getEmail();
-    static String uid = user.getUid();
 
     // make increase wrapped number
+    public static String uid;
+    public static FirebaseFirestore db;
+
+    public db(String uid, FirebaseFirestore db) {
+        this.uid = uid;
+        this.db = db;
+    }
 
     public static void createProfile() throws JSONException{
         DocumentReference doc = db.collection(uid).document("number_of_wraps");
@@ -82,8 +86,6 @@ public class db {
     }
 
     public static void storeUserProfile(JSONObject jsonObject) throws JSONException {
-
-        String username = user.getEmail();
 
         // Check if passed in JSONObject is null
         if (jsonObject == null) { Log.d("db", "JSONObject is null when trying to store user profile data."); return; }
@@ -117,218 +119,163 @@ public class db {
                     }
                 });
     }
-
-    public static void storeTopArtists(JSONObject jsonObject) throws JSONException {
-        // Check if passed in JSONObject is null
-        String username = user.getEmail();
-
-        // Check if passed in JSONObject is null
-        if (jsonObject == null) { Log.d("db", "JSONObject is null when trying to store user profile data."); return; }
-        // Create a map to store user's top artist information
-        Map<String, Object> userTopArtists = new HashMap<>();
-
-        // Iterate through top artists to get top 5 artists
-        for (int i = 0; i < 5 && i < jsonObject.getJSONArray("items").length(); i++) {
-            // Create inner map for specific artist
-            Map<String, Object> topArtist = new HashMap<>();
-
-            // Put artists name in inner map
-            topArtist.put("name", jsonObject.getJSONArray("items").getJSONObject(i).getString("name"));
-
-            // Put artists image (if applicable) in inner map
-            if (jsonObject.getJSONArray("items").getJSONObject(i).getJSONArray("images").length() > 0) {
-                topArtist.put("image", jsonObject.getJSONArray("items").getJSONObject(i).getJSONArray("images").getJSONObject(0).getString("url"));
-            } else {
-                topArtist.put("image", null);
-            }
-
-            // Put specific artist into top artist map
-            userTopArtists.put("artist" + (i + 1), topArtist);
-        }
-
-        DocumentReference doc = db.collection(username).document("wraps");
-
-        // Add user top artist information to database
-        doc.set(userTopArtists)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        Log.d("db", "Document added to collection successfully!");
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.e("db", "Error adding document to collection", e);
-                    }
-                });
-    }
-
-
-
-    public static void storeTopTracks(JSONObject jsonObject) throws JSONException {
-        // Check if passed in JSONObject is null
-        if (jsonObject == null) { Log.d("db", "JSONObject is null when trying to store user's top track data."); return; }
-
-        // Create a map to store user's top track information
-        Map<String, Object> userTopTracks = new HashMap<>();
-
-        // Iterate through top tracks to get top 5 tracks
-        for (int i = 0; i < 5 && i < jsonObject.getJSONArray("items").length(); i++) {
-            // Create inner map to store specific track's information
-            Map<String, Object> topTrack = new HashMap<>();
-
-            // Put track's name into inner map
-            topTrack.put("name", jsonObject.getJSONArray("items").getJSONObject(i).getString("name"));
-
-            // Put track's image, if applicable, into inner map
-            if (jsonObject.getJSONArray("items").getJSONObject(i).getJSONObject("album").getJSONArray("images").length() > 0) {
-                topTrack.put("image", jsonObject.getJSONArray("items").getJSONObject(i).getJSONObject("album").getJSONArray("images")
-                        .getJSONObject(0).getString("url"));
-            } else {
-                topTrack.put("image", null);
-            }
-
-            // Put track's artists into inner map
-            List<String> trackArtists = new ArrayList<>();
-            for (int j = 0; j < jsonObject.getJSONArray("items").getJSONObject(i).getJSONArray("artists").length(); j++) {
-                trackArtists.add(j, jsonObject.getJSONArray("items").getJSONObject(i).getJSONArray("artists").getJSONObject(j).getString("name"));
-            }
-            topTrack.put("artists", trackArtists);
-
-            // Put specific track's information in the top track information
-            userTopTracks.put("track" + (i + 1), topTrack);
-        }
-
-        // Add user top track information to database
-        db.collection("users")
-                .add(userTopTracks)
-                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                    @Override
-                    public void onSuccess(DocumentReference documentReference) {
-                        Log.d("db", "DocumentSnapshot added with ID: " + documentReference.getId());
-                    }
-                })
-
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.d("db", "Error adding document", e);
-                    }
-                });
-    }
+//
+//    public static void storeTopArtists(JSONObject jsonObject) throws JSONException {
+//        // Check if passed in JSONObject is null
+//        String username = user.getEmail();
+//
+//        // Check if passed in JSONObject is null
+//        if (jsonObject == null) { Log.d("db", "JSONObject is null when trying to store user profile data."); return; }
+//        // Create a map to store user's top artist information
+//        Map<String, Object> userTopArtists = new HashMap<>();
+//
+//        // Iterate through top artists to get top 5 artists
+//        for (int i = 0; i < 5 && i < jsonObject.getJSONArray("items").length(); i++) {
+//            // Create inner map for specific artist
+//            Map<String, Object> topArtist = new HashMap<>();
+//
+//            // Put artists name in inner map
+//            topArtist.put("name", jsonObject.getJSONArray("items").getJSONObject(i).getString("name"));
+//
+//            // Put artists image (if applicable) in inner map
+//            if (jsonObject.getJSONArray("items").getJSONObject(i).getJSONArray("images").length() > 0) {
+//                topArtist.put("image", jsonObject.getJSONArray("items").getJSONObject(i).getJSONArray("images").getJSONObject(0).getString("url"));
+//            } else {
+//                topArtist.put("image", null);
+//            }
+//
+//            // Put specific artist into top artist map
+//            userTopArtists.put("artist" + (i + 1), topArtist);
+//        }
+//
+//        DocumentReference doc = db.collection(username).document("wraps");
+//
+//        // Add user top artist information to database
+//        doc.set(userTopArtists)
+//                .addOnSuccessListener(new OnSuccessListener<Void>() {
+//                    @Override
+//                    public void onSuccess(Void aVoid) {
+//                        Log.d("db", "Document added to collection successfully!");
+//                    }
+//                })
+//                .addOnFailureListener(new OnFailureListener() {
+//                    @Override
+//                    public void onFailure(@NonNull Exception e) {
+//                        Log.e("db", "Error adding document to collection", e);
+//                    }
+//                });
+//    }
+//
+//
+//
+//    public static void storeTopTracks(JSONObject jsonObject) throws JSONException {
+//        // Check if passed in JSONObject is null
+//        if (jsonObject == null) { Log.d("db", "JSONObject is null when trying to store user's top track data."); return; }
+//
+//        // Create a map to store user's top track information
+//        Map<String, Object> userTopTracks = new HashMap<>();
+//
+//        // Iterate through top tracks to get top 5 tracks
+//        for (int i = 0; i < 5 && i < jsonObject.getJSONArray("items").length(); i++) {
+//            // Create inner map to store specific track's information
+//            Map<String, Object> topTrack = new HashMap<>();
+//
+//            // Put track's name into inner map
+//            topTrack.put("name", jsonObject.getJSONArray("items").getJSONObject(i).getString("name"));
+//
+//            // Put track's image, if applicable, into inner map
+//            if (jsonObject.getJSONArray("items").getJSONObject(i).getJSONObject("album").getJSONArray("images").length() > 0) {
+//                topTrack.put("image", jsonObject.getJSONArray("items").getJSONObject(i).getJSONObject("album").getJSONArray("images")
+//                        .getJSONObject(0).getString("url"));
+//            } else {
+//                topTrack.put("image", null);
+//            }
+//
+//            // Put track's artists into inner map
+//            List<String> trackArtists = new ArrayList<>();
+//            for (int j = 0; j < jsonObject.getJSONArray("items").getJSONObject(i).getJSONArray("artists").length(); j++) {
+//                trackArtists.add(j, jsonObject.getJSONArray("items").getJSONObject(i).getJSONArray("artists").getJSONObject(j).getString("name"));
+//            }
+//            topTrack.put("artists", trackArtists);
+//
+//            // Put specific track's information in the top track information
+//            userTopTracks.put("track" + (i + 1), topTrack);
+//        }
+//
+//        // Add user top track information to database
+//        db.collection("users")
+//                .add(userTopTracks)
+//                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+//                    @Override
+//                    public void onSuccess(DocumentReference documentReference) {
+//                        Log.d("db", "DocumentSnapshot added with ID: " + documentReference.getId());
+//                    }
+//                })
+//
+//                .addOnFailureListener(new OnFailureListener() {
+//                    @Override
+//                    public void onFailure(@NonNull Exception e) {
+//                        Log.d("db", "Error adding document", e);
+//                    }
+//                });
+//    }
 
     public interface FirestoreCallback {
         void onDocumentReceived(DocumentSnapshot documentSnapshot);
         void onFailure(Exception e);
     }
 
-    public static CompletableFuture<DocumentSnapshot> makeRequest(String document) {
-        // Create a CompletableFuture to hold the result
-        CompletableFuture<DocumentSnapshot> future = new CompletableFuture<>();
+//    public static CompletableFuture<DocumentSnapshot> makeRequest(String document) {
+//        // Create a CompletableFuture to hold the result
+//        CompletableFuture<DocumentSnapshot> future = new CompletableFuture<>();
+//
+//        // Call executeRequest() with a callback
+//        executeRequest(document, new FirestoreCallback() {
+//            @Override
+//            public void onDocumentReceived(DocumentSnapshot documentSnapshot) {
+//                // Complete the CompletableFuture with the obtained DocumentSnapshot
+//                future.complete(documentSnapshot);
+//            }
+//
+//            @Override
+//            public void onFailure(Exception e) {
+//                // Complete the CompletableFuture exceptionally if there's a failure
+//                future.completeExceptionally(e);
+//            }
+//        });
+//
+//        // Return the CompletableFuture
+//        return future;
+//    }
 
-        // Call executeRequest() with a callback
-        executeRequest(document, new FirestoreCallback() {
-            @Override
-            public void onDocumentReceived(DocumentSnapshot documentSnapshot) {
-                // Complete the CompletableFuture with the obtained DocumentSnapshot
-                future.complete(documentSnapshot);
-            }
-
-            @Override
-            public void onFailure(Exception e) {
-                // Complete the CompletableFuture exceptionally if there's a failure
-                future.completeExceptionally(e);
-            }
-        });
-
-        // Return the CompletableFuture
-        return future;
-    }
-
-    public static void executeRequest(String document, FirestoreCallback callback) {
-        DocumentReference doc = db.collection(uid).document(document);
-
-        doc.get()
-                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                    @Override
-                    public void onSuccess(DocumentSnapshot documentSnapshot) {
-                        if (documentSnapshot.exists()) {
-                            // Pass the DocumentSnapshot directly to the callback
-                            callback.onDocumentReceived(documentSnapshot);
-                        } else {
-                            Log.d("db", "Document does not exist: " + document);
-                        }
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        // Handle failure
-                        Log.e("db", "Error getting document", e);
-                    }
-                });
-    }
-
-    public static Map<String, Object> getData(String documentPath) throws ExecutionException, InterruptedException {
-        // Get a document reference
-        DocumentReference docRef = db.collection(uid).document(documentPath);
-
-        // Retrieve asynchronously
-        Task<DocumentSnapshot> task = docRef.get();
-        // Block until the task is complete
-        DocumentSnapshot document = Tasks.await(task);
-
-        if (document.exists()) {
-            return document.getData();
-        } else {
-            System.out.println("No such document!");
-            return null;
-        }
-    }
-
-    public static void get(String name) {
-        DocumentReference docRef = db.collection(uid).document(name);
-        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (task.isSuccessful()) {
-                    DocumentSnapshot document = task.getResult();
-                    if (document.exists()) {
-                        handleDocumentData(document.getData());
-                    } else {
-                        handleNoDocument();
-                    }
-                } else {
-                    handleFailure(task.getException());
-                }
-            }
-        });
-    }
-
-    private static void handleDocumentData(Map<String, Object> data) {
-        // Process the retrieved document data here
-        // You can log it, store it, or do any other operation
-        Log.d(TAG, "DocumentSnapshot data: " + data);
-        // Pass data to another method for further processing
-        processData(data);
-    }
-
-    private static void handleNoDocument() {
-        Log.d(TAG, "No such document");
-        // Handle the case where the document doesn't exist
-    }
-
-    private static void handleFailure(Exception exception) {
-        Log.d(TAG, "get failed with ", exception);
-        // Handle the case where the task failed
-    }
-
-    private static void processData(Map<String, Object> data) {
-        // Process the data further if needed
-
-    }
-
+//    public static void executeRequest(String document, FirestoreCallback callback) {
+//        DocumentReference doc = db.collection(uid).document(document);
+//
+//        doc.get()
+//                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+//                    @Override
+//                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+//                        if (documentSnapshot.exists()) {
+//                            // Pass the DocumentSnapshot directly to the callback
+//                            callback.onDocumentReceived(documentSnapshot);
+//                        } else {
+//                            Log.d("db", "Document does not exist: " + document);
+//                        }
+//                    }
+//                })
+//                .addOnFailureListener(new OnFailureListener() {
+//                    @Override
+//                    public void onFailure(@NonNull Exception e) {
+//                        // Handle failure
+//                        Log.e("db", "Error getting document", e);
+//                    }
+//                });
+//    }
+//
+//    public static void out() {
+//        FirebaseAuth.getInstance().signOut();
+//    }
+//
 
 
 

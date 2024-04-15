@@ -37,6 +37,7 @@
                 android:fontFamily="@font/poppins_semibold"
                 android:text="Username"
                 android:textColor="@color/white"
+                android:textColorLink="@color/white"
                 android:textSize="24sp" />
 
             <LinearLayout

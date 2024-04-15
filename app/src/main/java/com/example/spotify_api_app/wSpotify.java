@@ -53,12 +53,6 @@ public class wSpotify extends AppCompatActivity{
     public TextView output, textView;
     private AccessTokenData accessTokenData;
 
-    private static final FirebaseFirestore datab = FirebaseFirestore.getInstance();
-    private static final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-
-    static String username = user.getEmail();
-    static String uid = user.getUid();
-
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -69,6 +63,10 @@ public class wSpotify extends AppCompatActivity{
     private void login() {
         final AuthorizationRequest request = api.getAuth(AuthorizationResponse.Type.CODE);
         AuthorizationClient.openLoginActivity(wSpotify.this, AUTH_CODE_REQUEST_CODE, request);
+    }
+
+    public static void out() {
+        FirebaseAuth.getInstance().signOut();
     }
 
     @Override
@@ -99,31 +97,27 @@ public class wSpotify extends AppCompatActivity{
                 .url("https://api.spotify.com/v1/me")
                 .addHeader("Authorization", "Bearer " + accessToken)
                 .build();
-        try {
-            JSONObject jsonResponse = api.makeRequest(request);
-            JSONStorageManager.saveData(getApplicationContext(), "profile_info", jsonResponse);
-            db.storeUserProfile(jsonResponse);
-        } catch (JSONException e) {
-            Log.d("JSON", "Failed to parse data: " + e);
-        }
+        JSONObject jsonResponse = api.makeRequest(request);
+        JSONStorageManager.saveData(getApplicationContext(), "profile_info", jsonResponse);
+
 
 
         // get user wraps
         textView.setText("getting your previous wraps...");
 
-        DocumentReference documentReference = datab.collection(uid).document("number_of_wraps");
-        documentReference.addSnapshotListener(this, new EventListener<DocumentSnapshot>() {
-            @Override
-            public void onEvent(@Nullable DocumentSnapshot value, @Nullable FirebaseFirestoreException error) {
-//                try {
-//                    Thread.sleep(30);
-//                } catch (InterruptedException e) {
-//                    error.printStackTrace();
-//                }
-                JSONStorageManager.saveData(getApplicationContext(), "number_of_wraps", new JSONObject(value.getData()));
-                Log.d("tag", value.getData().toString());
-            }
-        });
+//        DocumentReference documentReference = datab.collection(uid).document("number_of_wraps");
+//        documentReference.addSnapshotListener(this, new EventListener<DocumentSnapshot>() {
+//            @Override
+//            public void onEvent(@Nullable DocumentSnapshot value, @Nullable FirebaseFirestoreException error) {
+////                try {
+////                    Thread.sleep(30);
+////                } catch (InterruptedException e) {
+////                    error.printStackTrace();
+////                }
+//                JSONStorageManager.saveData(getApplicationContext(), "number_of_wraps", new JSONObject(value.getData()));
+//                Log.d("tag", value.getData().toString());
+//            }
+//        });
 
             // Make a request and get a CompletableFuture<Map<String, Object>>
 
@@ -144,6 +138,11 @@ public class wSpotify extends AppCompatActivity{
         // get all public wraps
         textView.setText("getting other public wraps...");
 
+        try {
+            db.storeUserProfile(jsonResponse);
+        } catch (JSONException e) {
+            Log.d("JSON", "Failed to parse data: " + e);
+        }
         navigateToMainFeedActivity();
         // _____________________________________________________________
 

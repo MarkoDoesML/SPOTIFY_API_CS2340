@@ -29,7 +29,8 @@
             android:id="@+id/ThreeMonthsButton"
             android:layout_width="wrap_content"
             android:text="4 Weeks"
-            android:textColor="@color/light_gray"/>
+            android:textColor="@color/light_gray"
+            android:textSize="20sp" />
 
         <RadioButton
             android:id="@+id/SixMonthsButton"

@@ -85,6 +85,10 @@ public class LoginActivity extends AppCompatActivity {
 
         mAuth = FirebaseAuth.getInstance();
 
+        if (getIntent().getBooleanExtra("logout", false)) {
+            mAuth.signOut();
+        }
+
         etUsername = findViewById(R.id.etUsername);
         etPassword = findViewById(R.id.etPassword);
         btnLogin = findViewById(R.id.btnLogin);
@@ -94,10 +98,32 @@ public class LoginActivity extends AppCompatActivity {
         sharedPreferences = getSharedPreferences("loginPrefs", Context.MODE_PRIVATE);
 
         // Check if user already logged in
-        String savedUsername = sharedPreferences.getString("username", "");
-        if (!savedUsername.isEmpty()) {
+        String initemail = sharedPreferences.getString("username", "");
+        if (!initemail.isEmpty()) {
+//            try {
+//                db.createProfile();
+//            } catch (JSONException e) {
+//                System.err.println("JSON Exception occurred: " + e.getMessage());
+//                Toast.makeText(LoginActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
+//                e.printStackTrace();
+//            }
             // If username is saved, directly move to next activity
-            navigateToMainFeedActivity();
+            String password = sharedPreferences.getString("password", "");
+            mAuth.signInWithEmailAndPassword(initemail, password)
+                    .addOnCompleteListener(this, task -> {
+                        if (task.isSuccessful()) {
+                            Log.d("Login", "signInWithEmail:success");
+                            navigateToMainFeedActivity();
+                        } else {
+                            String errorMessage = "Authentication failed.";
+                            try {
+                                throw task.getException();
+                            } catch(Exception e) {
+                                errorMessage = e.getMessage();
+                            }
+                            Toast.makeText(LoginActivity.this, errorMessage, Toast.LENGTH_LONG).show();
+                        }
+                    });
         }
 
         btnLogin.setOnClickListener(new View.OnClickListener() {
@@ -130,6 +156,8 @@ public class LoginActivity extends AppCompatActivity {
                         Log.d("Login", "signInWithEmail:success");
                         SharedPreferences.Editor editor = sharedPreferences.edit();
                         editor.putString("username", email);
+                        editor.putString("password", password);
+                        editor.putString("uid", mAuth.getCurrentUser().getUid());
                         editor.apply();
                         navigateToMainFeedActivity();
                     } else {
@@ -160,16 +188,19 @@ public class LoginActivity extends AppCompatActivity {
                         Log.d("SignUp", "createUserWithEmail:success");
                         SharedPreferences.Editor editor = sharedPreferences.edit();
                         editor.putString("username", email);
+                        editor.putString("password", password);
+                        editor.putString("uid", mAuth.getCurrentUser().getUid());
                         editor.apply();
 
                         try {
                             db.createProfile();
+                            navigateToMainFeedActivity();
                         } catch (JSONException e) {
                             System.err.println("JSON Exception occurred: " + e.getMessage());
+                            Toast.makeText(LoginActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
                             e.printStackTrace();
                         }
 
-                        navigateToMainFeedActivity();
                     } else {
                         String errorMessage = "Registration failed.";
                         try {

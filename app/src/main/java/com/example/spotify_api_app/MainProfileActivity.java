@@ -76,7 +76,6 @@ import com.google.android.gms.tasks.Task;
 
 public class MainProfileActivity extends AppCompatActivity {
     private SharedPreferences sharedPreferences;
-    private FirebaseAuth mAuth;
 
     String duration;
     boolean isPublic;
@@ -101,7 +100,6 @@ public class MainProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_profile);
 
-        mAuth = FirebaseAuth.getInstance();
         sharedPreferences = getSharedPreferences("AccessTokenData", MODE_PRIVATE);
         String json = sharedPreferences.getString("accessTokenData", null);
         TextView usernameTextView = findViewById(R.id.username);
@@ -289,8 +287,8 @@ public class MainProfileActivity extends AppCompatActivity {
         editor.clear();
         editor.apply();
 
-        mAuth.signOut();
         Intent intent = new Intent(MainProfileActivity.this, LoginActivity.class);
+        intent.putExtra("logout", true);
         startActivity(intent);
         finish();
     }
