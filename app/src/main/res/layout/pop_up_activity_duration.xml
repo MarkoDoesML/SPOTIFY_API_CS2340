@@ -14,7 +14,7 @@
         android:text="Choose duration of wrap:"
         android:textColor="@color/white"
         android:fontFamily="@font/poppins_semibold"
-        android:textSize="25sp"
+        android:textSize="18sp"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
@@ -31,7 +31,7 @@
             android:layout_height="wrap_content"
             android:text="3 Months"
             android:textColor="@color/light_gray"
-            android:textSize="20sp"/>
+            android:textSize="16sp"/>
 
         <RadioButton
             android:id="@+id/SixMonthsButton"
@@ -39,7 +39,7 @@
             android:layout_height="wrap_content"
             android:textColor="@color/light_gray"
             android:text="6 Months"
-            android:textSize="20sp" />
+            android:textSize="16sp" />
 
         <RadioButton
             android:id="@+id/OneYearButton"
@@ -47,7 +47,7 @@
             android:layout_height="wrap_content"
             android:textColor="@color/light_gray"
             android:text="1 Year"
-            android:textSize="20sp" />
+            android:textSize="16sp" />
 
     </RadioGroup>
 
@@ -58,8 +58,8 @@
         android:text="Choose Its Visibility:"
         android:textColor="@color/white"
         android:fontFamily="@font/poppins_semibold"
-        android:textSize="25sp"
-        android:layout_marginTop="16dp"
+        android:textSize="18sp"
+        android:layout_marginTop="4dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/DurationButtons" />
 
@@ -76,7 +76,7 @@
             android:layout_height="wrap_content"
             android:textColor="@color/light_gray"
             android:text="Public"
-            android:textSize="20sp" />
+            android:textSize="16sp" />
 
         <RadioButton
             android:id="@+id/PrivateButton"
@@ -84,7 +84,7 @@
             android:layout_height="wrap_content"
             android:textColor="@color/light_gray"
             android:text="Private"
-            android:textSize="20sp" />
+            android:textSize="16sp" />
 
     </RadioGroup>
 
@@ -92,12 +92,14 @@
         android:id="@+id/GenerateButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="10dp"
+        android:layout_marginEnd="16dp"
+        android:backgroundTint="@color/lime_green"
         android:text="Generate"
         android:textSize="15sp"
-        android:backgroundTint="@color/lime_green"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/CancelButton" />
+        app:layout_constraintEnd_toStartOf="@id/CancelButton"
+        app:layout_constraintTop_toBottomOf="@+id/PublicButtons"
+        app:layout_constraintVertical_bias="1.0" />
 
     <Button
         android:id="@+id/CancelButton"
@@ -107,6 +109,8 @@
         android:text="Cancel"
         android:textSize="15sp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/PublicButtons"
+        app:layout_constraintVertical_bias="1.0" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
