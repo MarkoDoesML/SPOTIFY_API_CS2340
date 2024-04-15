@@ -7,8 +7,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.app.Activity;
+import android.text.Html;
+import android.text.method.LinkMovementMethod;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -88,7 +91,7 @@ public class MainProfileActivity extends AppCompatActivity {
     private AccessTokenData accessTokenData;
     private String mAccessToken, mAccessCode;
     TextView usernameTextView;
-    String username;
+    String username, link, uri;
     CompletableFuture<DocumentSnapshot> output;
     private ImageView profileImage;
     @Override
@@ -138,7 +141,13 @@ public class MainProfileActivity extends AppCompatActivity {
         JSONObject info = JSONStorageManager.loadData(getApplicationContext(), "profile_info");
         try {
             username = info.getString("display_name");
-            usernameTextView.setText(username);
+            link = info.getJSONObject("external_urls").getString("spotify");
+            String htmlLink = "<a href=\"" + link + "\">" + username + "</a>";
+            usernameTextView.setText(Html.fromHtml(htmlLink));
+            uri = info.getString("uri");
+            usernameTextView.setMovementMethod(LinkMovementMethod.getInstance()); // Make links clickable
+
+// Set OnClickListener to handle link click
         } catch (JSONException e) {
             e.printStackTrace();
             // Handle the exception, such as setting a default text or showing an error message
@@ -156,6 +165,12 @@ public class MainProfileActivity extends AppCompatActivity {
 
         Picasso.get().load(img_url).into(profileImage);
 
+        usernameTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openSpotify(uri);
+            }
+        });
 
         btn_wrapped.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -202,6 +217,35 @@ public class MainProfileActivity extends AppCompatActivity {
                 return false;
             }
         });
+    }
+
+    public void openSpotify(String spotifyUri) {
+        if (spotifyUri != null && !spotifyUri.isEmpty()) {
+            // Check if the URI is actually a Spotify URI that needs conversion to a web URL
+            if (spotifyUri.startsWith("spotify:artist:")) {
+                spotifyUri = "https://open.spotify.com/artist/" + spotifyUri.substring("spotify:artist:".length());
+            } else if (spotifyUri.startsWith("https///")) {
+                // Correct the URL if it starts incorrectly
+                spotifyUri = "https://" + spotifyUri.substring(8);
+            }
+
+            Log.d("ArtistsAdapter", "Attempting to open Spotify URL: " + spotifyUri);  // Log the URL here
+
+            Uri uri = Uri.parse(spotifyUri);
+            Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+
+            // Attempt to direct this intent specifically to a web browser
+            intent.addCategory(Intent.CATEGORY_BROWSABLE);
+
+            // Check if there is an application that can handle the web intent
+            if (intent.resolveActivity(this.getPackageManager()) != null) {
+                this.startActivity(intent);
+            } else {
+                Log.e("ArtistsAdapter", "Please install a web browser or check the URL.");
+            }
+        } else {
+            Log.e("ArtistsAdapter", "Spotify URL is null or empty");
+        }
     }
 
     @Override
