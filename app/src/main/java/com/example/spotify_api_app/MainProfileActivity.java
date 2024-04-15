@@ -259,7 +259,7 @@ public class MainProfileActivity extends AppCompatActivity {
                 Log.d("Duration", "Duration: " + duration);
                 Log.d("Visibility", "Public: " + isPublic);
                 String date = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
-                Map<String, Object> wrapped = api.makeWrapped(mAccessToken);
+                Map<String, Object> wrapped = api.makeWrapped(mAccessToken, time);
                 wrappedAdapter.addItem(username, date);
                 wrappedItemList = new ArrayList<>();
             }

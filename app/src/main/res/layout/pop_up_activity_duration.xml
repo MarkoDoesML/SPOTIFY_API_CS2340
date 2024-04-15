@@ -57,7 +57,7 @@
 
             android:layout_height="wrap_content"
 
-            android:text="3 Months"
+            android:text="4 Weeks"
 
             android:textSize="20sp"/>
 

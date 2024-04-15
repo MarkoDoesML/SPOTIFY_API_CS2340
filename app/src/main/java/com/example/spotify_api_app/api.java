@@ -273,6 +273,8 @@ public class api {
             wrap.put("artists", userTopArtists);
         } else {
             Map<String, Object> userTopTracks = new HashMap<>();
+            Map<String, Object> userTopAlbums = new HashMap<>();
+
 
             // Iterate through top tracks to get top 5 tracks
             for (int i = 0; i < 5 && i < json.getJSONArray("items").length(); i++) {
@@ -301,16 +303,44 @@ public class api {
                 userTopTracks.put("track" + (i + 1), topTrack);
 
             }
+            for (int i = 0; i < 50 && i < json.getJSONArray("items").length(); i++) {
+                // Create inner map to store specific track's information
+                Map<String, Object> topTrack = new HashMap<>();
+                JSONObject item = json.getJSONArray("items").getJSONObject(i);
+                String albumName = item.getString("name");
+                // Put track's name into inner map
+                topTrack.put("name", json.getJSONArray("items").getJSONObject(i).getString("name"));
+
+                // Put track's image, if applicable, into inner map
+                if (json.getJSONArray("items").getJSONObject(i).getJSONObject("album").getJSONArray("images").length() > 0) {
+                    topTrack.put("image", json.getJSONArray("items").getJSONObject(i).getJSONObject("album").getJSONArray("images")
+                            .getJSONObject(0).getString("url"));
+                } else {
+                    topTrack.put("image", null);
+                }
+
+                // Put track's artists into inner map
+                List<String> trackArtists = new ArrayList<>();
+                for (int j = 0; j < json.getJSONArray("items").getJSONObject(i).getJSONArray("artists").length(); j++) {
+                    trackArtists.add(j, json.getJSONArray("items").getJSONObject(i).getJSONArray("artists").getJSONObject(j).getString("name"));
+                }
+                topTrack.put("artists", trackArtists);
+
+                // Put specific track's information in the top track information
+                userTopTracks.put("track" + (i + 1), topTrack);
+
+            }
             wrap.put("tracks", userTopTracks);
+            wrap.put("albums", userTopAlbums);
         }
         return wrap;
     }
 
 
-    public static Map<String, Object> makeWrapped(String token) {
+    public static Map<String, Object> makeWrapped(String token, String term) {
         Map<String, Object> wrapped = new HashMap<>();
         final Request request = new Request.Builder()
-                .url("https://api.spotify.com/v1/me/top/artists")
+                .url("https://api.spotify.com/v1/me/top/artists?time_range=" + term + "&limit=5")
                 .addHeader("Authorization", "Bearer " + token)
                 .build();
         try {
@@ -321,7 +351,7 @@ public class api {
         }
 
         final Request r = new Request.Builder()
-                .url("https://api.spotify.com/v1/me/top/tracks")
+                .url("https://api.spotify.com/v1/me/top/tracks?time_range=" + term + "&limit=50")
                 .addHeader("Authorization", "Bearer " + token)
                 .build();
         try {

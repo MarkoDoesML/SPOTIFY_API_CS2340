@@ -56,12 +56,12 @@ public class DurationPopUpActivity extends AppCompatActivity {
                     RadioButton checkedVisibilityButton = findViewById(checkedVisibilityButtonId);
 
                     // Return duration according to checked duration button
-                    if (checkedDurationButton.getText().toString().equals("3 Months")) {
-                        i.putExtra("duration", "3Months");
+                    if (checkedDurationButton.getText().toString().equals("4 Weeks")) {
+                        i.putExtra("duration", "short_term");
                     } else if (checkedDurationButton.getText().toString().equals("6 Months")) {
-                        i.putExtra("duration", "6Months");
+                        i.putExtra("duration", "medium_term");
                     } else {
-                        i.putExtra("duration", "1Year");
+                        i.putExtra("duration", "long_term");
                     }
 
                     // Return visibility according to checked visibility button
