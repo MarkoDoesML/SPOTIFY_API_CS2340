@@ -51,11 +51,11 @@ public class db {
 
     // make increase wrapped number
     public static String uid;
-    public static FirebaseFirestore db;
 
-    public db(String uid, FirebaseFirestore db) {
+    public static FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+    public db(String uid) {
         this.uid = uid;
-        this.db = db;
     }
 
     public static void createProfile() throws JSONException{

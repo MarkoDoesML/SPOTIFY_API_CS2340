@@ -96,7 +96,9 @@ public class LoginActivity extends AppCompatActivity {
 
         // Initialize SharedPreferences
         sharedPreferences = getSharedPreferences("loginPrefs", Context.MODE_PRIVATE);
-
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.clear();
+        editor.apply();
         // Check if user already logged in
         String initemail = sharedPreferences.getString("username", "");
         if (!initemail.isEmpty()) {
@@ -166,10 +168,12 @@ public class LoginActivity extends AppCompatActivity {
                         SharedPreferences.Editor editor = sharedPreferences.edit();
                         editor.putString("username", email);
                         editor.putString("password", password);
-                        editor.putString("uid", mAuth.getCurrentUser().getUid());
+                        String uid = mAuth.getCurrentUser().getUid();
+                        editor.putString("uid",uid);
                         editor.apply();
 
                         try {
+                            db db = new db(uid);
                             db.createProfile();
                             navigateToMainFeedActivity();
                         } catch (JSONException e) {

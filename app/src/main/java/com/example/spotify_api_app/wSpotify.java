@@ -100,7 +100,8 @@ public class wSpotify extends AppCompatActivity{
         JSONObject jsonResponse = api.makeRequest(request);
         JSONStorageManager.saveData(getApplicationContext(), "profile_info", jsonResponse);
 
-
+        SharedPreferences auths = getSharedPreferences("loginPrefs", MODE_PRIVATE);
+        String uid = auths.getString("uid", "junk");
 
         // get user wraps
         textView.setText("getting your previous wraps...");
@@ -137,7 +138,7 @@ public class wSpotify extends AppCompatActivity{
 
         // get all public wraps
         textView.setText("getting other public wraps...");
-
+        db db = new db(uid);
         try {
             db.storeUserProfile(jsonResponse);
         } catch (JSONException e) {
