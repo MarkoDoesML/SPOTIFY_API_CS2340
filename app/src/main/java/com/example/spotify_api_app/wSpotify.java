@@ -57,6 +57,8 @@ public class wSpotify extends AppCompatActivity{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_spotify);
+        textView = findViewById(R.id.textView);
+        textView.setText("getting your info...");
         login();
     }
 
@@ -65,14 +67,9 @@ public class wSpotify extends AppCompatActivity{
         AuthorizationClient.openLoginActivity(wSpotify.this, AUTH_CODE_REQUEST_CODE, request);
     }
 
-    public static void out() {
-        FirebaseAuth.getInstance().signOut();
-    }
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
         final AuthorizationResponse response = AuthorizationClient.getResponse(resultCode, data);
         String accessCode = response.getCode();
         String accessToken = api.getToken(accessCode);
@@ -90,9 +87,8 @@ public class wSpotify extends AppCompatActivity{
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString("accessTokenData", json);
         editor.apply();
-        textView = findViewById(R.id.textView);
         // updates spotify info
-        textView.setText("getting latest spotify info...");
+
         final Request request = new Request.Builder()
                 .url("https://api.spotify.com/v1/me")
                 .addHeader("Authorization", "Bearer " + accessToken)
@@ -103,47 +99,47 @@ public class wSpotify extends AppCompatActivity{
         SharedPreferences auths = getSharedPreferences("loginPrefs", MODE_PRIVATE);
         String uid = auths.getString("uid", "junk");
 
-        // get user wraps
-        textView.setText("getting your previous wraps...");
-
-//        DocumentReference documentReference = datab.collection(uid).document("number_of_wraps");
-//        documentReference.addSnapshotListener(this, new EventListener<DocumentSnapshot>() {
-//            @Override
-//            public void onEvent(@Nullable DocumentSnapshot value, @Nullable FirebaseFirestoreException error) {
-////                try {
-////                    Thread.sleep(30);
-////                } catch (InterruptedException e) {
-////                    error.printStackTrace();
-////                }
-//                JSONStorageManager.saveData(getApplicationContext(), "number_of_wraps", new JSONObject(value.getData()));
-//                Log.d("tag", value.getData().toString());
-//            }
-//        });
-
-            // Make a request and get a CompletableFuture<Map<String, Object>>
-
-//        documentReference.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-//            @Override
-//            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-//                if (task.isSuccessful()) {
-//                    DocumentSnapshot doc = task.getResult();
-//                    if (doc.exists()) {
-//                        Log.d("Document", doc.getData().toString());
-//                    } else {
-//                        Log.d("Document", "No data");
-//                    }
-//                }
-//            }
-//        });
-
-        // get all public wraps
-        textView.setText("getting other public wraps...");
         db db = new db(uid);
         try {
             db.storeUserProfile(jsonResponse);
         } catch (JSONException e) {
             Log.d("JSON", "Failed to parse data: " + e);
         }
+
+
+
+//        JSONObject short_term = new JSONObject(api.makeWrapped(accessToken, "short_term"));
+//        JSONObject medium_term = new JSONObject(api.makeWrapped(accessToken, "medium_term"));
+//        JSONObject long_term = new JSONObject(api.makeWrapped(accessToken, "long_term"));
+
+        // get user wrap info
+
+        DocumentReference documentReference = db.getDocRef("number_of_wraps");
+        documentReference.addSnapshotListener(this, new EventListener<DocumentSnapshot>() {
+            @Override
+            public void onEvent(@Nullable DocumentSnapshot value, @Nullable FirebaseFirestoreException error) {
+//                try {
+//                    Thread.sleep(30);
+//                } catch (InterruptedException e) {
+//                    error.printStackTrace();
+//                }
+                JSONStorageManager.saveData(getApplicationContext(), "number_of_wraps", new JSONObject(value.getData()));
+                Log.d("tag", value.getData().toString());
+            }
+        });
+
+        // get user wraps
+        // document "wraps" -> store all wraps
+
+        // get all public wraps
+
+        // get collection public wraps
+
+
+//        JSONStorageManager.saveData(getApplicationContext(), "short_term", short_term);
+//        JSONStorageManager.saveData(getApplicationContext(), "medium_term", medium_term);
+//        JSONStorageManager.saveData(getApplicationContext(), "long_term", long_term);
+
         navigateToMainFeedActivity();
         // _____________________________________________________________
 
@@ -154,5 +150,10 @@ public class wSpotify extends AppCompatActivity{
         startActivity(intent);
         finish();
     }
+
+    private void setTextAsync(final String text, TextView textView) {
+        runOnUiThread(() -> textView.setText(text));
+    }
+
 
 }
