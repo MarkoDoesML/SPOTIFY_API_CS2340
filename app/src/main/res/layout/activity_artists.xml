@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/light_yellow">
+    android:background="@color/darker_gray">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -29,7 +29,7 @@
                 android:layout_marginBottom="18dp"
                 android:fontFamily="@font/poppins_semibold"
                 android:text="Top Artists"
-                android:textColor="@color/black"
+                android:textColor="@color/white"
                 android:textSize="25sp" />
 
             <Button
@@ -55,6 +55,7 @@
                 android:layout_marginStart="16dp"
                 android:fontFamily="@font/poppins_semibold"
                 android:gravity="center"
+                android:textColor="@color/white"
                 android:text="1"
                 android:textSize="28sp"
                 android:textStyle="bold" />
@@ -65,7 +66,7 @@
                 android:layout_height="100dp"
                 android:layout_marginStart="12dp"
                 app:shapeAppearance="@style/circleImageView"
-                app:srcCompat="@drawable/artist_profile_pic" />
+                app:srcCompat="@android:drawable/ic_menu_gallery" />
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -80,6 +81,7 @@
                     android:layout_marginTop="24dp"
                     android:fontFamily="@font/poppins_semibold"
                     android:paddingStart="4dp"
+                    android:textColor="@color/white"
                     android:text="Artist Name"
                     android:textStyle="bold" />
 
@@ -87,6 +89,7 @@
                     android:id="@+id/minutes1"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:textColor="@color/light_gray"
                     android:paddingStart="4dp"
                     android:text="Minutes" />
 
@@ -106,6 +109,7 @@
                 android:layout_height="match_parent"
                 android:layout_marginStart="16dp"
                 android:fontFamily="@font/poppins_semibold"
+                android:textColor="@color/white"
                 android:gravity="center"
                 android:text="2"
                 android:textSize="28sp"
@@ -117,7 +121,7 @@
                 android:layout_height="100dp"
                 android:layout_marginStart="12dp"
                 app:shapeAppearance="@style/circleImageView"
-                app:srcCompat="@drawable/artist_profile_pic" />
+                app:srcCompat="@android:drawable/ic_menu_gallery" />
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -132,6 +136,7 @@
                     android:layout_marginTop="24dp"
                     android:fontFamily="@font/poppins_semibold"
                     android:paddingStart="4dp"
+                    android:textColor="@color/white"
                     android:text="Artist Name"
                     android:textStyle="bold" />
 
@@ -139,6 +144,7 @@
                     android:id="@+id/minutes2"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:textColor="@color/light_gray"
                     android:paddingStart="4dp"
                     android:text="Minutes" />
 
@@ -159,6 +165,7 @@
                 android:layout_marginStart="16dp"
                 android:fontFamily="@font/poppins_semibold"
                 android:gravity="center"
+                android:textColor="@color/white"
                 android:text="3"
                 android:textSize="28sp"
                 android:textStyle="bold" />
@@ -169,7 +176,7 @@
                 android:layout_height="100dp"
                 android:layout_marginStart="12dp"
                 app:shapeAppearance="@style/circleImageView"
-                app:srcCompat="@drawable/artist_profile_pic" />
+                app:srcCompat="@android:drawable/ic_menu_gallery" />
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -183,6 +190,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="24dp"
                     android:fontFamily="@font/poppins_semibold"
+                    android:textColor="@color/white"
                     android:paddingStart="4dp"
                     android:text="Artist Name"
                     android:textStyle="bold" />
@@ -191,6 +199,7 @@
                     android:id="@+id/minutes3"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:textColor="@color/light_gray"
                     android:paddingStart="4dp"
                     android:text="Minutes" />
 
@@ -212,6 +221,7 @@
                 android:fontFamily="@font/poppins_semibold"
                 android:gravity="center"
                 android:text="4"
+                android:textColor="@color/white"
                 android:textSize="28sp"
                 android:textStyle="bold" />
 
@@ -221,7 +231,7 @@
                 android:layout_height="100dp"
                 android:layout_marginStart="12dp"
                 app:shapeAppearance="@style/circleImageView"
-                app:srcCompat="@drawable/artist_profile_pic" />
+                app:srcCompat="@android:drawable/ic_menu_gallery" />
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -236,6 +246,7 @@
                     android:layout_marginTop="24dp"
                     android:fontFamily="@font/poppins_semibold"
                     android:paddingStart="4dp"
+                    android:textColor="@color/white"
                     android:text="Artist Name"
                     android:textStyle="bold" />
 
@@ -243,6 +254,7 @@
                     android:id="@+id/minutes4"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:textColor="@color/light_gray"
                     android:paddingStart="4dp"
                     android:text="Minutes" />
 
@@ -263,6 +275,7 @@
                 android:layout_marginStart="16dp"
                 android:fontFamily="@font/poppins_semibold"
                 android:gravity="center"
+                android:textColor="@color/white"
                 android:text="5"
                 android:textSize="28sp"
                 android:textStyle="bold" />
@@ -273,7 +286,7 @@
                 android:layout_height="100dp"
                 android:layout_marginStart="12dp"
                 app:shapeAppearance="@style/circleImageView"
-                app:srcCompat="@drawable/artist_profile_pic" />
+                app:srcCompat="@android:drawable/ic_menu_gallery" />
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -287,6 +300,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="24dp"
                     android:fontFamily="@font/poppins_semibold"
+                    android:textColor="@color/white"
                     android:paddingStart="4dp"
                     android:text="Artist Name"
                     android:textStyle="bold" />
@@ -295,6 +309,7 @@
                     android:id="@+id/minutes5"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:textColor="@color/light_gray"
                     android:paddingStart="4dp"
                     android:text="Minutes" />
 
