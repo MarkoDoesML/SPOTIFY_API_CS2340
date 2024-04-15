@@ -8,6 +8,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
@@ -16,7 +19,13 @@ import android.util.Log;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.spotify.sdk.android.auth.AuthorizationClient;
 import com.spotify.sdk.android.auth.AuthorizationRequest;
 import com.spotify.sdk.android.auth.AuthorizationResponse;
@@ -32,7 +41,9 @@ import okhttp3.Request;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 public class wSpotify extends AppCompatActivity{
     private SharedPreferences sharedPreferences;
@@ -42,6 +53,11 @@ public class wSpotify extends AppCompatActivity{
     public TextView output, textView;
     private AccessTokenData accessTokenData;
 
+    private static final FirebaseFirestore datab = FirebaseFirestore.getInstance();
+    private static final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+    static String username = user.getEmail();
+    static String uid = user.getUid();
 
 
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +74,7 @@ public class wSpotify extends AppCompatActivity{
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+
         final AuthorizationResponse response = AuthorizationClient.getResponse(resultCode, data);
         String accessCode = response.getCode();
         String accessToken = api.getToken(accessCode);
@@ -90,12 +107,39 @@ public class wSpotify extends AppCompatActivity{
             Log.d("JSON", "Failed to parse data: " + e);
         }
 
-        CompletableFuture<DocumentSnapshot> number_of_wraps = db.makeRequest("number_of_wraps");
-
 
         // get user wraps
         textView.setText("getting your previous wraps...");
 
+        DocumentReference documentReference = datab.collection(uid).document("number_of_wraps");
+        documentReference.addSnapshotListener(this, new EventListener<DocumentSnapshot>() {
+            @Override
+            public void onEvent(@Nullable DocumentSnapshot value, @Nullable FirebaseFirestoreException error) {
+//                try {
+//                    Thread.sleep(30);
+//                } catch (InterruptedException e) {
+//                    error.printStackTrace();
+//                }
+                JSONStorageManager.saveData(getApplicationContext(), "number_of_wraps", new JSONObject(value.getData()));
+                Log.d("tag", value.getData().toString());
+            }
+        });
+
+            // Make a request and get a CompletableFuture<Map<String, Object>>
+
+//        documentReference.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+//            @Override
+//            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+//                if (task.isSuccessful()) {
+//                    DocumentSnapshot doc = task.getResult();
+//                    if (doc.exists()) {
+//                        Log.d("Document", doc.getData().toString());
+//                    } else {
+//                        Log.d("Document", "No data");
+//                    }
+//                }
+//            }
+//        });
 
         // get all public wraps
         textView.setText("getting other public wraps...");

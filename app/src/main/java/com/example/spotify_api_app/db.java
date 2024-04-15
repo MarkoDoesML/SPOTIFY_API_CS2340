@@ -1,11 +1,18 @@
 package com.example.spotify_api_app;
 
 
+import static androidx.constraintlayout.helper.widget.MotionEffect.TAG;
+
 import android.annotation.SuppressLint;
 import android.util.Log;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.Tasks;
+
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -31,6 +38,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicReference;
 
 import okhttp3.Request;
@@ -239,7 +247,7 @@ public class db {
     }
 
     public static void executeRequest(String document, FirestoreCallback callback) {
-        DocumentReference doc = db.collection(username).document(document);
+        DocumentReference doc = db.collection(uid).document(document);
 
         doc.get()
                 .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
@@ -261,4 +269,67 @@ public class db {
                     }
                 });
     }
+
+    public static Map<String, Object> getData(String documentPath) throws ExecutionException, InterruptedException {
+        // Get a document reference
+        DocumentReference docRef = db.collection(uid).document(documentPath);
+
+        // Retrieve asynchronously
+        Task<DocumentSnapshot> task = docRef.get();
+        // Block until the task is complete
+        DocumentSnapshot document = Tasks.await(task);
+
+        if (document.exists()) {
+            return document.getData();
+        } else {
+            System.out.println("No such document!");
+            return null;
+        }
+    }
+
+    public static void get(String name) {
+        DocumentReference docRef = db.collection(uid).document(name);
+        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document.exists()) {
+                        handleDocumentData(document.getData());
+                    } else {
+                        handleNoDocument();
+                    }
+                } else {
+                    handleFailure(task.getException());
+                }
+            }
+        });
+    }
+
+    private static void handleDocumentData(Map<String, Object> data) {
+        // Process the retrieved document data here
+        // You can log it, store it, or do any other operation
+        Log.d(TAG, "DocumentSnapshot data: " + data);
+        // Pass data to another method for further processing
+        processData(data);
+    }
+
+    private static void handleNoDocument() {
+        Log.d(TAG, "No such document");
+        // Handle the case where the document doesn't exist
+    }
+
+    private static void handleFailure(Exception exception) {
+        Log.d(TAG, "get failed with ", exception);
+        // Handle the case where the task failed
+    }
+
+    private static void processData(Map<String, Object> data) {
+        // Process the data further if needed
+
+    }
+
+
+
+
 }

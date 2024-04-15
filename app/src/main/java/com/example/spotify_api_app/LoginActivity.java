@@ -161,6 +161,14 @@ public class LoginActivity extends AppCompatActivity {
                         SharedPreferences.Editor editor = sharedPreferences.edit();
                         editor.putString("username", email);
                         editor.apply();
+
+                        try {
+                            db.createProfile();
+                        } catch (JSONException e) {
+                            System.err.println("JSON Exception occurred: " + e.getMessage());
+                            e.printStackTrace();
+                        }
+
                         navigateToMainFeedActivity();
                     } else {
                         String errorMessage = "Registration failed.";

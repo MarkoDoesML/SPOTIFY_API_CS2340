@@ -92,6 +92,7 @@ public class MainProfileActivity extends AppCompatActivity {
     private String mAccessToken, mAccessCode;
     TextView usernameTextView;
     String username, link, uri;
+    int wrapped_number;
     CompletableFuture<DocumentSnapshot> output;
     private ImageView profileImage;
     @Override
@@ -140,6 +141,7 @@ public class MainProfileActivity extends AppCompatActivity {
         String img_url = "https://image-cdn-ak.spotifycdn.com/image/ab67706c0000da8463bcdace67f79859e30a17fa";
         JSONObject info = JSONStorageManager.loadData(getApplicationContext(), "profile_info");
         try {
+//            wrapped_number = info.getInt("wraps_created");
             username = info.getString("display_name");
             link = info.getJSONObject("external_urls").getString("spotify");
             String htmlLink = "<a href=\"" + link + "\">" + username + "</a>";
@@ -164,6 +166,9 @@ public class MainProfileActivity extends AppCompatActivity {
 
 
         Picasso.get().load(img_url).into(profileImage);
+
+        JSONObject num = JSONStorageManager.loadData(getApplicationContext(), "number_of_wraps");
+
 
         usernameTextView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -260,6 +265,11 @@ public class MainProfileActivity extends AppCompatActivity {
                 Log.d("Visibility", "Public: " + isPublic);
                 String date = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
                 Map<String, Object> wrapped = api.makeWrapped(mAccessToken, time);
+                wrapped.put("date", date);
+                wrapped.put("public", view);
+                wrapped.put("uri", uri);
+                wrapped.put("duration", time);
+                wrapped.put("number", wrapped_number);
                 wrappedAdapter.addItem(username, date);
                 wrappedItemList = new ArrayList<>();
             }
