@@ -16,7 +16,9 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Base64;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
@@ -273,7 +275,7 @@ public class api {
             wrap.put("artists", userTopArtists);
         } else {
             Map<String, Object> userTopTracks = new HashMap<>();
-            Map<String, Object> userTopAlbums = new HashMap<>();
+
 
 
             // Iterate through top tracks to get top 5 tracks
@@ -303,35 +305,35 @@ public class api {
                 userTopTracks.put("track" + (i + 1), topTrack);
 
             }
+            Map<String, Integer> albumCounts = new HashMap<>();
+            Map<String, Object> userTopAlbums = new HashMap<>();
             for (int i = 0; i < 50 && i < json.getJSONArray("items").length(); i++) {
                 // Create inner map to store specific track's information
                 Map<String, Object> topTrack = new HashMap<>();
-                JSONObject item = json.getJSONArray("items").getJSONObject(i);
+                JSONObject item = json.getJSONArray("items").getJSONObject(i).getJSONObject("album");
                 String albumName = item.getString("name");
+                String albumImage = item.getJSONArray("images").getJSONObject(0).getString("url");
+
+                topTrack.put("name", albumName);
+                topTrack.put("image", albumImage);
+
+                albumCounts.put(albumName, albumCounts.getOrDefault(albumName, 0) + 1);
+                userTopAlbums.put(albumName, topTrack);
                 // Put track's name into inner map
-                topTrack.put("name", json.getJSONArray("items").getJSONObject(i).getString("name"));
-
-                // Put track's image, if applicable, into inner map
-                if (json.getJSONArray("items").getJSONObject(i).getJSONObject("album").getJSONArray("images").length() > 0) {
-                    topTrack.put("image", json.getJSONArray("items").getJSONObject(i).getJSONObject("album").getJSONArray("images")
-                            .getJSONObject(0).getString("url"));
-                } else {
-                    topTrack.put("image", null);
-                }
-
-                // Put track's artists into inner map
-                List<String> trackArtists = new ArrayList<>();
-                for (int j = 0; j < json.getJSONArray("items").getJSONObject(i).getJSONArray("artists").length(); j++) {
-                    trackArtists.add(j, json.getJSONArray("items").getJSONObject(i).getJSONArray("artists").getJSONObject(j).getString("name"));
-                }
-                topTrack.put("artists", trackArtists);
-
-                // Put specific track's information in the top track information
-                userTopTracks.put("track" + (i + 1), topTrack);
-
             }
+
+            List<Map.Entry<String, Integer>> sortedAlbums = new ArrayList<>(albumCounts.entrySet());
+            sortedAlbums.sort(Map.Entry.comparingByValue(Comparator.reverseOrder()));
+
+            // Extract top 5 albums
+            Map<String, Object> top5Albums = new HashMap<>();
+            for (int i = 0; i < Math.min(5, sortedAlbums.size()); i++) {
+                String albumName = sortedAlbums.get(i).getKey();
+                top5Albums.put("album" + (i + 1), userTopAlbums.get(albumName));
+            }
+
             wrap.put("tracks", userTopTracks);
-            wrap.put("albums", userTopAlbums);
+            wrap.put("albums", top5Albums);
         }
         return wrap;
     }
