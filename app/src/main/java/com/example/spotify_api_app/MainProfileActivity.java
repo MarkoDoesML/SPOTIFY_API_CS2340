@@ -79,7 +79,7 @@ public class MainProfileActivity extends AppCompatActivity {
     boolean isPublic;
     int START_POPUP_ACTIVITY = 1;
     Button btn_wrapped;
-    Button btn_logout;
+    ImageButton btn_logout;
   
     RecyclerView recyclerView;
     WrappedAdapter wrappedAdapter;

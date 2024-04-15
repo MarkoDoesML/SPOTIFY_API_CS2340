@@ -4,12 +4,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/light_yellow">
+    android:background="@color/darker_gray">
 
     <LinearLayout
         android:id="@+id/profileSection"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@color/darker_gray"
         android:orientation="horizontal"
         android:padding="16dp">
 
@@ -17,8 +18,9 @@
             android:id="@+id/profileImage"
             android:layout_width="123dp"
             android:layout_height="128dp"
+            android:backgroundTint="@color/darker_gray"
             android:padding="8dp"
-            android:src="@drawable/artist_profile_pic" />
+            android:src="@android:drawable/ic_menu_gallery" />
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -27,53 +29,70 @@
             android:layout_weight="1"
             android:orientation="vertical">
 
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:id="@+id/username"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="6dp"
-                        android:fontFamily="@font/poppins_semibold"
-                        android:text="Username"
-                        android:textColor="@color/black"
-                        android:textSize="24sp" />
-
-                    <ImageButton
-                        android:id="@+id/btn_delete_account"
-                        android:layout_width="36dp"
-                        android:layout_height="36dp"
-                        android:layout_marginStart="8dp"
-                        android:background="@color/light_yellow"
-                        android:src="@android:drawable/ic_delete" />
-                </LinearLayout>
-
-            <Button
-                android:id="@+id/logout"
-                android:onClick="logoutUser"
+            <TextView
+                android:id="@+id/username"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="6dp"
-                android:text="Logout"
-                android:textSize="16sp"/>
+                android:layout_marginStart="0dp"
+                android:fontFamily="@font/poppins_semibold"
+                android:text="Username"
+                android:textColor="@color/white"
+                android:textSize="24sp" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <ImageButton
+                    android:id="@+id/logout"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_gravity="center_vertical"
+                    android:backgroundTint="@color/darker_gray"
+                    android:onClick="logoutUser"
+                    android:src="@android:drawable/ic_menu_set_as"
+                    android:tooltipText="Logout"
+                    android:text="Logout"
+                    android:textSize="16sp" />
+
+                <ImageButton
+                    android:id="@+id/btn_delete_account"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:layout_marginStart="4dp"
+                    android:layout_gravity="center_vertical"
+                    android:tooltipText="Delete Profile"
+                    android:background="@color/darker_gray"
+                    android:src="@android:drawable/ic_menu_delete" />
+
+            </LinearLayout>
 
             <Button
                 android:id="@+id/btn_change_login_info"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="6dp"
-                android:text="Change Login Info"/>
+                android:layout_marginStart="4dp"
+                android:backgroundTint="@color/dark_gray"
+                android:tooltipText="Change Login Info"
+                android:text="Change Login Info" />
 
         </LinearLayout>
+
+
     </LinearLayout>
+
+
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/profileSection">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/profileSection"
+        android:background="@color/dark_gray"
         android:orientation="vertical"
         android:padding="16dp">
 
@@ -82,7 +101,8 @@
             android:id="@+id/btn_wrapped_page"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:backgroundTint="@color/dark_gray"
+            android:layout_gravity="center_horizontal"
+            android:backgroundTint="@color/lime_green"
             android:text="New Wrapped" />
 
         <TextView
@@ -90,7 +110,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:text="Past Wraps"
-            android:textColor="@color/black"
+            android:textColor="@color/white"
             android:fontFamily="@font/poppins_semibold"
             android:textSize="18sp"
             android:layout_marginBottom="8dp" />
@@ -104,11 +124,15 @@
 
     </LinearLayout>
 
+    </com.google.android.material.card.MaterialCardView>
+
+
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavigation"
         android:layout_width="match_parent"
         android:layout_height="65dp"
         android:layout_alignParentBottom="true"
+        android:background="@color/med_gray"
         app:itemIconTint="@drawable/selector"
         app:itemTextColor="@drawable/selector"
         app:menu="@menu/bottom_navigation_menu" />
