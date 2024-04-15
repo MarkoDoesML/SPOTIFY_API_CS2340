@@ -23,6 +23,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -33,6 +34,7 @@ import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -60,7 +62,7 @@ public class db {
 
     public static void createProfile() throws JSONException{
         DocumentReference doc = db.collection(uid).document("number_of_wraps");
-        Map<String, Object> wraps = new HashMap<>();
+        Map<String, Integer> wraps = new HashMap<>();
         wraps.put("total", 0);
         wraps.put("public", 0);
         wraps.put("private", 0);
@@ -83,6 +85,10 @@ public class db {
     public static void addWrapped(JSONObject wrapped, int total) throws JSONException {
         DocumentReference doc = db.collection(uid).document("wraps");
 
+    }
+
+    public DocumentReference getDocRef(String name) {
+        return db.collection(uid).document(name);
     }
 
     public static void storeUserProfile(JSONObject jsonObject) throws JSONException {
@@ -119,6 +125,58 @@ public class db {
                     }
                 });
     }
+
+    public static void storeWrapped(Map<String, Object> wrapped, Map<String, Integer> stats, boolean view) {
+        DocumentReference userWraps = db.collection(uid).document("wraps").collection("wrap_" + stats.get("total")).document(("wrap_" + stats.get("total")));
+        DocumentReference userInfo = db.collection(uid).document("number_of_wraps");
+        DocumentReference allWraps = db.collection("public_wraps").document(uid + "_wrap_" + stats.get("public"));
+
+        userWraps.set(wrapped)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d("db", "Document added to collection successfully!");
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.e("db", "Error adding document to collection", e);
+                    }
+                });
+
+        userInfo.set(stats)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d("db", "Document added to collection successfully!");
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.e("db", "Error adding document to collection", e);
+                    }
+                });
+
+        if(view) {
+            allWraps.set(wrapped)
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            Log.d("db", "Document added to collection successfully!");
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Log.e("db", "Error adding document to collection", e);
+                        }
+                    });
+        }
+
+    }
+
 //
 //    public static void storeTopArtists(JSONObject jsonObject) throws JSONException {
 //        // Check if passed in JSONObject is null
@@ -219,63 +277,6 @@ public class db {
 //                    }
 //                });
 //    }
-
-    public interface FirestoreCallback {
-        void onDocumentReceived(DocumentSnapshot documentSnapshot);
-        void onFailure(Exception e);
-    }
-
-//    public static CompletableFuture<DocumentSnapshot> makeRequest(String document) {
-//        // Create a CompletableFuture to hold the result
-//        CompletableFuture<DocumentSnapshot> future = new CompletableFuture<>();
-//
-//        // Call executeRequest() with a callback
-//        executeRequest(document, new FirestoreCallback() {
-//            @Override
-//            public void onDocumentReceived(DocumentSnapshot documentSnapshot) {
-//                // Complete the CompletableFuture with the obtained DocumentSnapshot
-//                future.complete(documentSnapshot);
-//            }
-//
-//            @Override
-//            public void onFailure(Exception e) {
-//                // Complete the CompletableFuture exceptionally if there's a failure
-//                future.completeExceptionally(e);
-//            }
-//        });
-//
-//        // Return the CompletableFuture
-//        return future;
-//    }
-
-//    public static void executeRequest(String document, FirestoreCallback callback) {
-//        DocumentReference doc = db.collection(uid).document(document);
-//
-//        doc.get()
-//                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-//                    @Override
-//                    public void onSuccess(DocumentSnapshot documentSnapshot) {
-//                        if (documentSnapshot.exists()) {
-//                            // Pass the DocumentSnapshot directly to the callback
-//                            callback.onDocumentReceived(documentSnapshot);
-//                        } else {
-//                            Log.d("db", "Document does not exist: " + document);
-//                        }
-//                    }
-//                })
-//                .addOnFailureListener(new OnFailureListener() {
-//                    @Override
-//                    public void onFailure(@NonNull Exception e) {
-//                        // Handle failure
-//                        Log.e("db", "Error getting document", e);
-//                    }
-//                });
-//    }
-//
-//    public static void out() {
-//        FirebaseAuth.getInstance().signOut();
-//    }
-//
 
 
 
