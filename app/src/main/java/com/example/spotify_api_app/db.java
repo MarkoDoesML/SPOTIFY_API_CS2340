@@ -22,9 +22,12 @@ import com.google.firestore.v1.WriteResult;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
@@ -39,8 +42,36 @@ public class db {
     private static final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
     static String username = user.getEmail();
+    static String uid = user.getUid();
 
     // make increase wrapped number
+
+    public static void createProfile() throws JSONException{
+        DocumentReference doc = db.collection(uid).document("number_of_wraps");
+        Map<String, Object> wraps = new HashMap<>();
+        wraps.put("total", 0);
+        wraps.put("public", 0);
+        wraps.put("private", 0);
+
+        doc.set(wraps)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d("db", "Document added to collection successfully!");
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.e("db", "Error adding document to collection", e);
+                    }
+                });
+    }
+
+    public static void addWrapped(JSONObject wrapped, int total) throws JSONException {
+        DocumentReference doc = db.collection(uid).document("wraps");
+
+    }
 
     public static void storeUserProfile(JSONObject jsonObject) throws JSONException {
 
@@ -60,8 +91,9 @@ public class db {
         }
         // Put uri into map
         userProfile.put("uri", jsonObject.getString("uri"));
+        userProfile.put("last_online", new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date()));
 
-        DocumentReference doc = db.collection(username).document("profile_info");
+        DocumentReference doc = db.collection(uid).document("profile_info");
 
         doc.set(userProfile)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -123,6 +155,8 @@ public class db {
                     }
                 });
     }
+
+
 
     public static void storeTopTracks(JSONObject jsonObject) throws JSONException {
         // Check if passed in JSONObject is null

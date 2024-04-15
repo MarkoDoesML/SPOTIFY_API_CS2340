@@ -16,6 +16,7 @@ import android.util.Log;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.spotify.sdk.android.auth.AuthorizationClient;
 import com.spotify.sdk.android.auth.AuthorizationRequest;
 import com.spotify.sdk.android.auth.AuthorizationResponse;
@@ -30,6 +31,8 @@ import okhttp3.Request;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+
+import java.util.concurrent.CompletableFuture;
 
 public class wSpotify extends AppCompatActivity{
     private SharedPreferences sharedPreferences;
@@ -86,6 +89,8 @@ public class wSpotify extends AppCompatActivity{
         } catch (JSONException e) {
             Log.d("JSON", "Failed to parse data: " + e);
         }
+
+        CompletableFuture<DocumentSnapshot> number_of_wraps = db.makeRequest("number_of_wraps");
 
 
         // get user wraps
