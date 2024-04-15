@@ -100,30 +100,7 @@ public class LoginActivity extends AppCompatActivity {
         // Check if user already logged in
         String initemail = sharedPreferences.getString("username", "");
         if (!initemail.isEmpty()) {
-//            try {
-//                db.createProfile();
-//            } catch (JSONException e) {
-//                System.err.println("JSON Exception occurred: " + e.getMessage());
-//                Toast.makeText(LoginActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
-//                e.printStackTrace();
-//            }
-            // If username is saved, directly move to next activity
-            String password = sharedPreferences.getString("password", "");
-            mAuth.signInWithEmailAndPassword(initemail, password)
-                    .addOnCompleteListener(this, task -> {
-                        if (task.isSuccessful()) {
-                            Log.d("Login", "signInWithEmail:success");
-                            navigateToMainFeedActivity();
-                        } else {
-                            String errorMessage = "Authentication failed.";
-                            try {
-                                throw task.getException();
-                            } catch(Exception e) {
-                                errorMessage = e.getMessage();
-                            }
-                            Toast.makeText(LoginActivity.this, errorMessage, Toast.LENGTH_LONG).show();
-                        }
-                    });
+            navigateToMainFeedActivity();
         }
 
         btnLogin.setOnClickListener(new View.OnClickListener() {
