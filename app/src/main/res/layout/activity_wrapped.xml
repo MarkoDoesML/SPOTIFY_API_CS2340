@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/light_yellow">
+    android:background="@color/darker_gray">
 
     <TextView
         android:id="@+id/textView3"
@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         android:fontFamily="@font/poppins_semibold"
         android:text="Your Past 6 Months in Music"
-        android:textColor="@color/black"
+        android:textColor="@color/white"
         android:textSize="25sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -35,14 +35,14 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@drawable/grad_light_blue"
+            android:background="@color/dark_gray"
             android:orientation="horizontal">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="0.5"
-                android:background="@drawable/grad_light_blue"
+
                 android:orientation="vertical">
 
                 <TextView
@@ -52,6 +52,7 @@
                     android:paddingTop="10dp"
                     android:paddingStart="14dp"
                     android:textSize="15sp"
+                    android:textColor="@color/white"
                     android:text="Top Artist >" />
 
                 <TextView
@@ -60,12 +61,14 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="14dp"
                     android:layout_marginTop="44dp"
+                    android:textColor="@color/white"
                     android:text="Artist Name"
                     android:textStyle="bold" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:textColor="@color/light_gray"
                     android:text="Minutes"
                     android:layout_marginStart="14dp" />
 
@@ -75,7 +78,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="0.5"
-                android:background="@drawable/grad_light_blue"
                 android:orientation="vertical">
 
                 <com.google.android.material.imageview.ShapeableImageView

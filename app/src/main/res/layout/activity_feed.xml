@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@color/light_yellow">
+    android:background="@color/darker_gray">
 
     <TextView
         android:layout_width="wrap_content"
@@ -12,6 +12,7 @@
         android:layout_marginTop="4dp"
         android:layout_gravity="center_horizontal"
         android:fontFamily="@font/poppins_semibold"
+        android:textColor="@color/white"
         android:text="Your Feed"
         android:textSize="28sp" />
 
@@ -29,6 +30,7 @@
             android:layout_width="match_parent"
             android:layout_height="65dp"
             android:layout_alignParentBottom="true"
+            android:background="@color/med_gray"
             app:itemIconTint="@drawable/selector"
             app:itemTextColor="@drawable/selector"
             app:menu="@menu/bottom_navigation_menu" />

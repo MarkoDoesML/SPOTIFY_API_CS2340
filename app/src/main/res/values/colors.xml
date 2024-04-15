@@ -3,5 +3,10 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="light_yellow">#FFFFED</color>
+    <color name="darkest_gray">#121212</color>
+    <color name="darker_gray">#212121</color>
     <color name="dark_gray">#2B2D30</color>
+    <color name="med_gray">#535353</color>
+    <color name="light_gray">#B3B3B3</color>
+    <color name="lime_green">#1db954</color>
 </resources>
