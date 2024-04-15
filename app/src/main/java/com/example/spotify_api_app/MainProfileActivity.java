@@ -20,9 +20,12 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -91,8 +94,9 @@ public class MainProfileActivity extends AppCompatActivity {
     private String mAccessToken, mAccessCode;
     TextView usernameTextView;
     String username, link, uri;
-    int wrapped_number;
+    int private_wraps, public_wraps;
     CompletableFuture<DocumentSnapshot> output;
+    Map<String, Integer> stats;
     private ImageView profileImage;
     @Override
 
@@ -166,6 +170,26 @@ public class MainProfileActivity extends AppCompatActivity {
         Picasso.get().load(img_url).into(profileImage);
 
         JSONObject num = JSONStorageManager.loadData(getApplicationContext(), "number_of_wraps");
+
+// Initialize a Map to store the converted values
+        stats = new HashMap<>();
+
+// Iterate through the keys of the JSONObject
+        Iterator<String> keys = num.keys();
+        while (keys.hasNext()) {
+            String key = keys.next();
+            // Extract the value as Object
+            Object value = num.opt(key);
+            if (value instanceof Integer) {
+                // If the value is already an Integer, add it directly to the map
+                stats.put(key, (Integer) value);
+            } else if (value instanceof Double) {
+                // If the value is a Double, cast it to int and add it to the map
+                stats.put(key, ((Double) value).intValue());
+            } else {
+                // Handle other types if necessary
+            }
+        }
 
 
         usernameTextView.setOnClickListener(new View.OnClickListener() {
@@ -262,14 +286,40 @@ public class MainProfileActivity extends AppCompatActivity {
                 Log.d("Duration", "Duration: " + duration);
                 Log.d("Visibility", "Public: " + isPublic);
                 String date = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
+
+//                JSONObject wrapped_json = JSONStorageManager.loadData(getApplicationContext(), time);
+//
+//                Map<String, Object> wrapped = new Gson().fromJson(wrapped_json.toString(), Map.class);
+
+
                 Map<String, Object> wrapped = api.makeWrapped(mAccessToken, time);
-                wrapped.put("date", date);
+                wrapped.put("date", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(new Date()));
                 wrapped.put("public", view);
+
+
+                int currentTotal = stats.get("total");
+                stats.put("total", currentTotal + 1);
+
+                if (view) {
+                    currentTotal = stats.get("public");
+                    stats.put("public", currentTotal + 1);
+                } else {
+                    currentTotal = stats.get("private");
+                    stats.put("private", currentTotal + 1);
+                }
+
+                JSONStorageManager.saveData(getApplicationContext(), "number_of_wraps", new JSONObject(stats));
+
                 wrapped.put("uri", uri);
                 wrapped.put("duration", time);
-                wrapped.put("number", wrapped_number);
+                wrapped.put("number", stats.get("total"));
+
+
                 wrappedAdapter.addItem(username, date);
                 wrappedItemList = new ArrayList<>();
+
+                db.storeWrapped(wrapped, stats, view);
+
             }
             if (resultCode == Activity.RESULT_CANCELED) {
                 // Do nothing
@@ -281,11 +331,30 @@ public class MainProfileActivity extends AppCompatActivity {
         performLogout(view);
     }
 
+    public void clearAllSharedPreferences(Context context) {
+        // Get list of all SharedPreferences files
+        File sharedPrefsDir = new File(context.getApplicationInfo().dataDir, "shared_prefs");
+        File[] sharedPrefsFiles = sharedPrefsDir.listFiles();
+
+        if (sharedPrefsFiles != null) {
+            // Iterate over each file and clear SharedPreferences
+            for (File file : sharedPrefsFiles) {
+                String fileName = file.getName().replace(".xml", "");
+                SharedPreferences sharedPreferences = context.getSharedPreferences(fileName, Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.clear();
+                editor.apply();
+            }
+        }
+    }
+
     private void performLogout(View view) {
-        sharedPreferences = getSharedPreferences("loginPrefs", Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.clear();
-        editor.apply();
+//        sharedPreferences = getSharedPreferences("loginPrefs", Context.MODE_PRIVATE);
+//        SharedPreferences.Editor editor = sharedPreferences.edit();
+//        editor.clear();
+//        editor.apply();
+
+        clearAllSharedPreferences(this);
 
         Intent intent = new Intent(MainProfileActivity.this, LoginActivity.class);
         intent.putExtra("logout", true);
