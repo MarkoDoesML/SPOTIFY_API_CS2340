@@ -347,10 +347,18 @@ public class api {
                 .build();
         try {
             JSONObject output = makeRequest(request);
+
+            if (output.has("error")) {
+                wrapped.put("error", true);
+            } else {
+                wrapped.put("error", false);
+            }
+
             wrapped = addToWrapped(output, "artist", wrapped);
         } catch (Exception e) {
             Log.d("JSON", "Failed to parse data: " + e);
         }
+
 
         final Request r = new Request.Builder()
                 .url("https://api.spotify.com/v1/me/top/tracks?time_range=" + term + "&limit=50")
