@@ -31,6 +31,10 @@ public class FeedActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
+
+
+        //TODO: use json content to fill ui
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_feed);
 

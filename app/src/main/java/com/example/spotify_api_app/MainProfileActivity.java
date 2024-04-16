@@ -340,6 +340,8 @@ public class MainProfileActivity extends AppCompatActivity {
                 JSONStorageManager.saveData(getApplicationContext(), "my_feed", my_feed);
                 JSONStorageManager.saveData(getApplicationContext(), "feed", feed);
 
+                //TODO: use json content to fill ui
+
                 wrappedAdapter.addItem(username, date);
                 wrappedItemList = new ArrayList<>();
 
@@ -417,6 +419,8 @@ public class MainProfileActivity extends AppCompatActivity {
                         performLogout(null);
                         finish();
                     }
+                    //TODO: delete collection and user uid
+                    //TODO: delete all documents starting with user uid in "public_wraps"
                 })
                 .setNegativeButton("Cancel", null)
                 .show();
