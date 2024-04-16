@@ -7,8 +7,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.app.Activity;
+import android.text.Html;
+import android.text.method.LinkMovementMethod;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -17,9 +20,12 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -73,7 +79,6 @@ import com.google.android.gms.tasks.Task;
 
 public class MainProfileActivity extends AppCompatActivity {
     private SharedPreferences sharedPreferences;
-    private FirebaseAuth mAuth;
 
     String duration;
     boolean isPublic;
@@ -88,16 +93,18 @@ public class MainProfileActivity extends AppCompatActivity {
     private AccessTokenData accessTokenData;
     private String mAccessToken, mAccessCode;
     TextView usernameTextView;
-    String username;
+    String username, link, uri;
+    int private_wraps, public_wraps;
     CompletableFuture<DocumentSnapshot> output;
+    Map<String, Integer> stats;
     private ImageView profileImage;
+    JSONObject my_feed, feed;
     @Override
 
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_profile);
 
-        mAuth = FirebaseAuth.getInstance();
         sharedPreferences = getSharedPreferences("AccessTokenData", MODE_PRIVATE);
         String json = sharedPreferences.getString("accessTokenData", null);
         TextView usernameTextView = findViewById(R.id.username);
@@ -137,7 +144,15 @@ public class MainProfileActivity extends AppCompatActivity {
         String img_url = "https://image-cdn-ak.spotifycdn.com/image/ab67706c0000da8463bcdace67f79859e30a17fa";
         JSONObject info = JSONStorageManager.loadData(getApplicationContext(), "profile_info");
         try {
-            usernameTextView.setText(info.getString("display_name"));
+//            wrapped_number = info.getInt("wraps_created");
+            username = info.getString("display_name");
+            link = info.getJSONObject("external_urls").getString("spotify");
+            String htmlLink = "<a href=\"" + link + "\">" + username + "</a>";
+            usernameTextView.setText(Html.fromHtml(htmlLink));
+            uri = info.getString("uri");
+            usernameTextView.setMovementMethod(LinkMovementMethod.getInstance()); // Make links clickable
+
+// Set OnClickListener to handle link click
         } catch (JSONException e) {
             e.printStackTrace();
             // Handle the exception, such as setting a default text or showing an error message
@@ -155,6 +170,37 @@ public class MainProfileActivity extends AppCompatActivity {
 
         Picasso.get().load(img_url).into(profileImage);
 
+        JSONObject num = JSONStorageManager.loadData(getApplicationContext(), "number_of_wraps");
+        my_feed = JSONStorageManager.loadData(getApplicationContext(), "my_feed");
+        feed = JSONStorageManager.loadData(getApplicationContext(), "feed");
+
+// Initialize a Map to store the converted values
+        stats = new HashMap<>();
+
+// Iterate through the keys of the JSONObject
+        Iterator<String> keys = num.keys();
+        while (keys.hasNext()) {
+            String key = keys.next();
+            // Extract the value as Object
+            Object value = num.opt(key);
+            if (value instanceof Integer) {
+                // If the value is already an Integer, add it directly to the map
+                stats.put(key, (Integer) value);
+            } else if (value instanceof Double) {
+                // If the value is a Double, cast it to int and add it to the map
+                stats.put(key, ((Double) value).intValue());
+            } else {
+                // Handle other types if necessary
+            }
+        }
+
+
+        usernameTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openSpotify(uri);
+            }
+        });
 
         btn_wrapped.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -203,21 +249,94 @@ public class MainProfileActivity extends AppCompatActivity {
         });
     }
 
+    public void openSpotify(String spotifyUri) {
+        if (spotifyUri != null && !spotifyUri.isEmpty()) {
+            // Check if the URI is actually a Spotify URI that needs conversion to a web URL
+            if (spotifyUri.startsWith("spotify:artist:")) {
+                spotifyUri = "https://open.spotify.com/artist/" + spotifyUri.substring("spotify:artist:".length());
+            } else if (spotifyUri.startsWith("https///")) {
+                // Correct the URL if it starts incorrectly
+                spotifyUri = "https://" + spotifyUri.substring(8);
+            }
+
+            Log.d("ArtistsAdapter", "Attempting to open Spotify URL: " + spotifyUri);  // Log the URL here
+
+            Uri uri = Uri.parse(spotifyUri);
+            Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+
+            // Attempt to direct this intent specifically to a web browser
+            intent.addCategory(Intent.CATEGORY_BROWSABLE);
+
+            // Check if there is an application that can handle the web intent
+            if (intent.resolveActivity(this.getPackageManager()) != null) {
+                this.startActivity(intent);
+            } else {
+                Log.e("ArtistsAdapter", "Please install a web browser or check the URL.");
+            }
+        } else {
+            Log.e("ArtistsAdapter", "Spotify URL is null or empty");
+        }
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == START_POPUP_ACTIVITY) {
             if (resultCode == Activity.RESULT_OK){
-                duration = data.getStringExtra("duration");
-                isPublic = data.getBooleanExtra("public", false);
+                String time = data.getStringExtra("duration");
+                boolean view = data.getBooleanExtra("public", false);
                 Log.d("Duration", "Duration: " + duration);
                 Log.d("Visibility", "Public: " + isPublic);
                 String date = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
-                String username = "Username";
-                Map<String, Object> wrapped = api.makeWrapped(mAccessToken);
+
+//                JSONObject wrapped_json = JSONStorageManager.loadData(getApplicationContext(), time);
+//
+//                Map<String, Object> wrapped = new Gson().fromJson(wrapped_json.toString(), Map.class);
+
+
+                Map<String, Object> wrapped = api.makeWrapped(mAccessToken, time);
+                wrapped.put("date", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(new Date()));
+                wrapped.put("public", view);
+
+
+                int currentTotal = stats.get("total");
+                stats.put("total", currentTotal + 1);
+
+                if (view) {
+                    currentTotal = stats.get("public");
+                    stats.put("public", currentTotal + 1);
+                } else {
+                    currentTotal = stats.get("private");
+                    stats.put("private", currentTotal + 1);
+                }
+
+                JSONStorageManager.saveData(getApplicationContext(), "number_of_wraps", new JSONObject(stats));
+
+                wrapped.put("uri", uri);
+                wrapped.put("duration", time);
+                wrapped.put("number", stats.get("total"));
+
+                my_feed = JSONStorageManager.loadData(getApplicationContext(), "my_feed");
+                feed = JSONStorageManager.loadData(getApplicationContext(), "feed");
+
+                try {
+                    my_feed.put("wrap_" + stats.get("total"), new JSONObject(wrapped));
+                    if (view) {
+                        feed.put(db.uid + "_wrap_" + stats.get("public"), new JSONObject(wrapped));
+                    }
+                } catch (JSONException e) {
+                    System.out.println("error");
+                }
+
+                JSONStorageManager.saveData(getApplicationContext(), "my_feed", my_feed);
+                JSONStorageManager.saveData(getApplicationContext(), "feed", feed);
+
                 wrappedAdapter.addItem(username, date);
                 wrappedItemList = new ArrayList<>();
+
+                db.storeWrapped(wrapped, stats, view);
+
             }
             if (resultCode == Activity.RESULT_CANCELED) {
                 // Do nothing
@@ -229,14 +348,37 @@ public class MainProfileActivity extends AppCompatActivity {
         performLogout(view);
     }
 
-    private void performLogout(View view) {
-        sharedPreferences = getSharedPreferences("loginPrefs", Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.clear();
-        editor.apply();
+    public void clearAllSharedPreferences(Context context) {
+        // Get list of all SharedPreferences files
+        File sharedPrefsDir = new File(context.getApplicationInfo().dataDir, "shared_prefs");
+        File[] sharedPrefsFiles = sharedPrefsDir.listFiles();
 
-        mAuth.signOut();
+        if (sharedPrefsFiles != null) {
+            // Iterate over each file and clear SharedPreferences
+            for (File file : sharedPrefsFiles) {
+                String fileName = file.getName().replace(".xml", "");
+                SharedPreferences sharedPreferences = context.getSharedPreferences(fileName, Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.clear();
+                editor.apply();
+            }
+        }
+    }
+
+    private void performLogout(View view) {
+//        sharedPreferences = getSharedPreferences("loginPrefs", Context.MODE_PRIVATE);
+//        SharedPreferences.Editor editor = sharedPreferences.edit();
+//        editor.clear();
+//        editor.apply();
+
+        clearAllSharedPreferences(this);
+        JSONStorageManager.clearData(this,"profile_info");
+        JSONStorageManager.clearData(this, "number_of_wraps");
+        JSONStorageManager.clearData(this, "my_feed");
+        JSONStorageManager.clearData(this, "feed");
+
         Intent intent = new Intent(MainProfileActivity.this, LoginActivity.class);
+        intent.putExtra("logout", true);
         startActivity(intent);
         finish();
     }

@@ -27,6 +27,8 @@ public class changeLoginInfoActivity extends AppCompatActivity {
         Button updatePasswordButton = findViewById(R.id.UpdatePasswordButton);
         Button returnButton = findViewById(R.id.ReturnButton);
 
+        //TODO: also update local prefs
+
         updateEmailButton.setOnClickListener(v -> {
             String newEmail = updateEmailEditText.getText().toString().trim();
             if (!newEmail.isEmpty()) {
@@ -58,6 +60,7 @@ public class changeLoginInfoActivity extends AppCompatActivity {
             }
         });
 
+        //TODO: also update local prefs
 
         updatePasswordButton.setOnClickListener(v -> {
             String newPassword = updatePasswordEditText.getText().toString().trim();

@@ -5,6 +5,8 @@ import android.content.SharedPreferences;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
+
 public class JSONStorageManager {
 
     private static final String PREF_NAME = "MyPrefs";
@@ -34,5 +36,22 @@ public class JSONStorageManager {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.remove(key);
         editor.apply();
+    }
+
+    private static void deleteAssociatedFiles(Context context, String key) {
+        // Get the directory where SharedPreferences files are stored
+        File sharedPrefsDir = new File(context.getApplicationInfo().dataDir, "shared_prefs");
+
+        // Get list of all SharedPreferences files
+        File[] sharedPrefsFiles = sharedPrefsDir.listFiles();
+
+        if (sharedPrefsFiles != null) {
+            // Iterate over each file and delete if associated with the given key
+            for (File file : sharedPrefsFiles) {
+                if (file.getName().startsWith(PREF_NAME + key)) {
+                    file.delete();
+                }
+            }
+        }
     }
 }

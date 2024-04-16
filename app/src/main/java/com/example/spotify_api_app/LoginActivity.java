@@ -85,6 +85,10 @@ public class LoginActivity extends AppCompatActivity {
 
         mAuth = FirebaseAuth.getInstance();
 
+        if (getIntent().getBooleanExtra("logout", false)) {
+            mAuth.signOut();
+        }
+
         etUsername = findViewById(R.id.etUsername);
         etPassword = findViewById(R.id.etPassword);
         btnLogin = findViewById(R.id.btnLogin);
@@ -94,9 +98,8 @@ public class LoginActivity extends AppCompatActivity {
         sharedPreferences = getSharedPreferences("loginPrefs", Context.MODE_PRIVATE);
 
         // Check if user already logged in
-        String savedUsername = sharedPreferences.getString("username", "");
-        if (!savedUsername.isEmpty()) {
-            // If username is saved, directly move to next activity
+        String initemail = sharedPreferences.getString("username", "");
+        if (!initemail.isEmpty()) {
             navigateToMainFeedActivity();
         }
 
@@ -130,6 +133,8 @@ public class LoginActivity extends AppCompatActivity {
                         Log.d("Login", "signInWithEmail:success");
                         SharedPreferences.Editor editor = sharedPreferences.edit();
                         editor.putString("username", email);
+                        editor.putString("password", password);
+                        editor.putString("uid", mAuth.getCurrentUser().getUid());
                         editor.apply();
                         navigateToMainFeedActivity();
                     } else {
@@ -160,8 +165,21 @@ public class LoginActivity extends AppCompatActivity {
                         Log.d("SignUp", "createUserWithEmail:success");
                         SharedPreferences.Editor editor = sharedPreferences.edit();
                         editor.putString("username", email);
+                        editor.putString("password", password);
+                        String uid = mAuth.getCurrentUser().getUid();
+                        editor.putString("uid",uid);
                         editor.apply();
-                        navigateToMainFeedActivity();
+
+                        try {
+                            db db = new db(uid);
+                            db.createProfile();
+                            navigateToMainFeedActivity();
+                        } catch (JSONException e) {
+                            System.err.println("JSON Exception occurred: " + e.getMessage());
+                            Toast.makeText(LoginActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
+                            e.printStackTrace();
+                        }
+
                     } else {
                         String errorMessage = "Registration failed.";
                         try {
