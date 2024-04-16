@@ -98,6 +98,7 @@ public class MainProfileActivity extends AppCompatActivity {
     CompletableFuture<DocumentSnapshot> output;
     Map<String, Integer> stats;
     private ImageView profileImage;
+    JSONObject my_feed, feed;
     @Override
 
     protected void onCreate(Bundle savedInstanceState){
@@ -170,6 +171,8 @@ public class MainProfileActivity extends AppCompatActivity {
         Picasso.get().load(img_url).into(profileImage);
 
         JSONObject num = JSONStorageManager.loadData(getApplicationContext(), "number_of_wraps");
+        my_feed = JSONStorageManager.loadData(getApplicationContext(), "my_feed");
+        feed = JSONStorageManager.loadData(getApplicationContext(), "feed");
 
 // Initialize a Map to store the converted values
         stats = new HashMap<>();
@@ -314,6 +317,20 @@ public class MainProfileActivity extends AppCompatActivity {
                 wrapped.put("duration", time);
                 wrapped.put("number", stats.get("total"));
 
+                my_feed = JSONStorageManager.loadData(getApplicationContext(), "my_feed");
+                feed = JSONStorageManager.loadData(getApplicationContext(), "feed");
+
+                try {
+                    my_feed.put("wrap_" + stats.get("total"), new JSONObject(wrapped));
+                    if (view) {
+                        feed.put(db.uid + "_wrap_" + stats.get("public"), new JSONObject(wrapped));
+                    }
+                } catch (JSONException e) {
+                    System.out.println("error");
+                }
+
+                JSONStorageManager.saveData(getApplicationContext(), "my_feed", my_feed);
+                JSONStorageManager.saveData(getApplicationContext(), "feed", feed);
 
                 wrappedAdapter.addItem(username, date);
                 wrappedItemList = new ArrayList<>();
@@ -355,6 +372,10 @@ public class MainProfileActivity extends AppCompatActivity {
 //        editor.apply();
 
         clearAllSharedPreferences(this);
+        JSONStorageManager.clearData(this,"profile_info");
+        JSONStorageManager.clearData(this, "number_of_wraps");
+        JSONStorageManager.clearData(this, "my_feed");
+        JSONStorageManager.clearData(this, "feed");
 
         Intent intent = new Intent(MainProfileActivity.this, LoginActivity.class);
         intent.putExtra("logout", true);

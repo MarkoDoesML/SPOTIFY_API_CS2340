@@ -96,9 +96,7 @@ public class LoginActivity extends AppCompatActivity {
 
         // Initialize SharedPreferences
         sharedPreferences = getSharedPreferences("loginPrefs", Context.MODE_PRIVATE);
-//        SharedPreferences.Editor editor = sharedPreferences.edit();
-//        editor.clear();
-//        editor.apply();
+
         // Check if user already logged in
         String initemail = sharedPreferences.getString("username", "");
         if (!initemail.isEmpty()) {
