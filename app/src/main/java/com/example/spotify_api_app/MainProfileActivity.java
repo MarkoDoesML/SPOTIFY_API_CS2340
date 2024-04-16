@@ -296,6 +296,13 @@ public class MainProfileActivity extends AppCompatActivity {
 
 
                 Map<String, Object> wrapped = api.makeWrapped(mAccessToken, time);
+
+                if ((Boolean) wrapped.get("error")) {
+                    navigateToLoginRefresh();
+                }
+
+                wrapped.remove("error");
+
                 wrapped.put("date", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(new Date()));
                 wrapped.put("public", view);
 
@@ -346,6 +353,12 @@ public class MainProfileActivity extends AppCompatActivity {
 
     public void logoutUser(View view) {
         performLogout(view);
+    }
+
+    private void navigateToLoginRefresh() {
+        Intent intent = new Intent(this, wSpotify.class);
+        startActivity(intent);
+        finish();
     }
 
     public void clearAllSharedPreferences(Context context) {
