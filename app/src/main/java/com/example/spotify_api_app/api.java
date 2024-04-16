@@ -10,6 +10,7 @@ import com.spotify.sdk.android.auth.AuthorizationClient;
 import com.spotify.sdk.android.auth.AuthorizationRequest;
 import com.spotify.sdk.android.auth.AuthorizationResponse;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -253,6 +254,7 @@ public class api {
 
         if (type == "artist") {
             Map<String, Object> userTopArtists = new HashMap<>();
+            Map<String, Integer> genreCounts = new HashMap<>();
 
             for (int i = 0; i < 5 && i < json.getJSONArray("items").length(); i++) {
                 // Create inner map for specific artist
@@ -260,6 +262,7 @@ public class api {
 
                 // Put artists name in inner map
                 topArtist.put("name", json.getJSONArray("items").getJSONObject(i).getString("name"));
+                topArtist.put("url", json.getJSONArray("items").getJSONObject(i).getJSONObject("external_urls").getString("spotify"));
 
                 // Put artists image (if applicable) in inner map
                 if (json.getJSONArray("items").getJSONObject(i).getJSONArray("images").length() > 0) {
@@ -272,6 +275,25 @@ public class api {
                 userTopArtists.put("artist" + (i + 1), topArtist);
 
             }
+
+            for (int i = 0; i < 50 && i < json.getJSONArray("items").length(); i++) {
+                JSONObject artist = json.getJSONArray("items").getJSONObject(i);
+                JSONArray genres = (JSONArray) artist.get("genres");
+                for (int j = 0; j < genres.length(); j++) {
+                    String genre = (String)genres.get(j);
+                    genreCounts.put(genre, genreCounts.getOrDefault(genre, 0) + 1);
+                }
+            }
+            List<Map.Entry<String, Integer>> sortedGenres = new ArrayList<>(genreCounts.entrySet());
+            sortedGenres.sort(Map.Entry.comparingByValue(Comparator.reverseOrder()));
+
+            // Extract the top 5 genres
+            List<String> topGenres = new ArrayList<>();
+            for (int i = 0; i < Math.min(5, sortedGenres.size()); i++) {
+                topGenres.add(sortedGenres.get(i).getKey());
+            }
+
+            wrap.put("genres", topGenres);
             wrap.put("artists", userTopArtists);
         } else {
             Map<String, Object> userTopTracks = new HashMap<>();
@@ -285,7 +307,7 @@ public class api {
 
                 // Put track's name into inner map
                 topTrack.put("name", json.getJSONArray("items").getJSONObject(i).getString("name"));
-
+                topTrack.put("url", json.getJSONArray("items").getJSONObject(i).getJSONObject("external_urls").getString("spotify"));
                 // Put track's image, if applicable, into inner map
                 if (json.getJSONArray("items").getJSONObject(i).getJSONObject("album").getJSONArray("images").length() > 0) {
                     topTrack.put("image", json.getJSONArray("items").getJSONObject(i).getJSONObject("album").getJSONArray("images")
@@ -313,9 +335,13 @@ public class api {
                 JSONObject item = json.getJSONArray("items").getJSONObject(i).getJSONObject("album");
                 String albumName = item.getString("name");
                 String albumImage = item.getJSONArray("images").getJSONObject(0).getString("url");
+                String albumLink = item.getJSONObject("external_urls").getString("spotify");
+                JSONArray albumArtist = item.getJSONArray("artists");
 
                 topTrack.put("name", albumName);
                 topTrack.put("image", albumImage);
+                topTrack.put("url", albumLink);
+                topTrack.put("artist", albumArtist);
 
                 albumCounts.put(albumName, albumCounts.getOrDefault(albumName, 0) + 1);
                 userTopAlbums.put(albumName, topTrack);
@@ -329,6 +355,14 @@ public class api {
             Map<String, Object> top5Albums = new HashMap<>();
             for (int i = 0; i < Math.min(5, sortedAlbums.size()); i++) {
                 String albumName = sortedAlbums.get(i).getKey();
+                List<String> trackArtists = new ArrayList<>();
+                Map<String, Object> album = (Map<String, Object>) userTopAlbums.get(albumName);
+                JSONArray albumArtist = (JSONArray) album.get("artist");
+                for (int j = 0; j < albumArtist.length(); j++) {
+                    trackArtists.add(j, albumArtist.getJSONObject(j).getString("name"));
+                }
+
+                album.put("artist", trackArtists);
                 top5Albums.put("album" + (i + 1), userTopAlbums.get(albumName));
             }
 
@@ -342,7 +376,7 @@ public class api {
     public static Map<String, Object> makeWrapped(String token, String term) {
         Map<String, Object> wrapped = new HashMap<>();
         final Request request = new Request.Builder()
-                .url("https://api.spotify.com/v1/me/top/artists?time_range=" + term + "&limit=5")
+                .url("https://api.spotify.com/v1/me/top/artists?time_range=" + term + "&limit=50")
                 .addHeader("Authorization", "Bearer " + token)
                 .build();
         try {
