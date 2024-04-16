@@ -43,6 +43,12 @@ public class WrappedActivity extends AppCompatActivity {
         albumArtist = "Example Artist";
         albumImageResource = R.drawable.pinkfloyd; // Replace with actual resource ID
 
+        // TODO: use json content to fill ui
+        // TODO: get rid of minutes
+        // TODO: make titles bigger and centered with image
+        // TODO: add a top genres list
+
+
         // Set values to the views
         topArtistName.setText(artistName);
         topArtistImage.setImageResource(artistImageResource);
