@@ -254,6 +254,7 @@ public class api {
 
         if (type == "artist") {
             Map<String, Object> userTopArtists = new HashMap<>();
+            Map<String, Integer> genreCounts = new HashMap<>();
 
             for (int i = 0; i < 5 && i < json.getJSONArray("items").length(); i++) {
                 // Create inner map for specific artist
@@ -274,7 +275,25 @@ public class api {
                 userTopArtists.put("artist" + (i + 1), topArtist);
 
             }
-            
+
+            for (int i = 0; i < 50 && i < json.getJSONArray("items").length(); i++) {
+                JSONObject artist = json.getJSONArray("items").getJSONObject(i);
+                JSONArray genres = (JSONArray) artist.get("genres");
+                for (int j = 0; j < genres.length(); j++) {
+                    String genre = (String)genres.get(j);
+                    genreCounts.put(genre, genreCounts.getOrDefault(genre, 0) + 1);
+                }
+            }
+            List<Map.Entry<String, Integer>> sortedGenres = new ArrayList<>(genreCounts.entrySet());
+            sortedGenres.sort(Map.Entry.comparingByValue(Comparator.reverseOrder()));
+
+            // Extract the top 5 genres
+            List<String> topGenres = new ArrayList<>();
+            for (int i = 0; i < Math.min(5, sortedGenres.size()); i++) {
+                topGenres.add(sortedGenres.get(i).getKey());
+            }
+
+            wrap.put("genres", topGenres);
             wrap.put("artists", userTopArtists);
         } else {
             Map<String, Object> userTopTracks = new HashMap<>();
