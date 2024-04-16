@@ -139,8 +139,6 @@ public class MainProfileActivity extends AppCompatActivity {
 
 
 
-//        output = db.makeRequest("profile_info");
-
         String img_url = "https://image-cdn-ak.spotifycdn.com/image/ab67706c0000da8463bcdace67f79859e30a17fa";
         JSONObject info = JSONStorageManager.loadData(getApplicationContext(), "profile_info");
         try {
@@ -416,11 +414,15 @@ public class MainProfileActivity extends AppCompatActivity {
                                        }
                                    }
                                 });
+
                         performLogout(null);
                         finish();
                     }
                     //TODO: delete collection and user uid
                     //TODO: delete all documents starting with user uid in "public_wraps"
+
+
+
                 })
                 .setNegativeButton("Cancel", null)
                 .show();
