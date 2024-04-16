@@ -321,6 +321,7 @@ public class MainProfileActivity extends AppCompatActivity {
                 JSONStorageManager.saveData(getApplicationContext(), "number_of_wraps", new JSONObject(stats));
 
                 wrapped.put("uri", uri);
+                wrapped.put("username", username);
                 wrapped.put("duration", time);
                 wrapped.put("number", stats.get("total"));
 
