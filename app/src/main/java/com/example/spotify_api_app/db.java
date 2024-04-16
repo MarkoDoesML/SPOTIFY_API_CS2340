@@ -95,6 +95,10 @@ public class db {
         return db.collection("public_wraps");
     }
 
+    public CollectionReference getProfRef() {
+        return db.collection(uid);
+    }
+
     public static void storeUserProfile(JSONObject jsonObject) throws JSONException {
 
         // Check if passed in JSONObject is null

@@ -1,5 +1,7 @@
 package com.example.spotify_api_app;
 
+import static androidx.constraintlayout.helper.widget.MotionEffect.TAG;
+
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -21,11 +23,14 @@ import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.spotify.sdk.android.auth.AuthorizationClient;
 import com.spotify.sdk.android.auth.AuthorizationRequest;
 import com.spotify.sdk.android.auth.AuthorizationResponse;
@@ -41,6 +46,7 @@ import okhttp3.Request;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -129,6 +135,58 @@ public class wSpotify extends AppCompatActivity{
         });
 
         // get user wraps
+
+        CollectionReference collectionRef = db.getWrapDocRef();
+        Map<String, Object> feed = new HashMap<>();
+        // Get all documents in the collection
+        Task<QuerySnapshot> task = collectionRef.get();
+
+        // Wait for the task to complete synchronously
+        while (!task.isComplete()) {
+            // You can add a timeout or some other form of waiting here
+            textView.setText("getting your feed...");
+        }
+
+        if (task.isSuccessful()) {
+            // Iterate over all documents
+            for (DocumentSnapshot document : task.getResult().getDocuments()) {
+                feed.put(document.getId(), document.getData());
+                System.out.println("Document ID: " + document.getId());
+                System.out.println("Document Data: " + document.getData());
+            }
+        } else {
+            System.out.println("Error getting documents: " + task.getException());
+        }
+
+        JSONStorageManager.saveData(this, "feed", new JSONObject(feed));
+
+        CollectionReference profRef = db.getProfRef();
+        Map<String, Object> profFeed = new HashMap<>();
+
+        Task<QuerySnapshot> t = profRef.get();
+
+        // Wait for the task to complete synchronously
+        while (!t.isComplete()) {
+            // You can add a timeout or some other form of waiting here
+            textView.setText("getting my feed...");
+        }
+
+        if (t.isSuccessful()) {
+            // Iterate over all documents
+            for (DocumentSnapshot document : t.getResult().getDocuments()) {
+                if (document.getId().startsWith("wrap")) {
+                    profFeed.put(document.getId(), document.getData());
+                }
+                System.out.println("Document ID: " + document.getId());
+                System.out.println("Document Data: " + document.getData());
+            }
+        } else {
+            System.out.println("Error getting documents: " + task.getException());
+        }
+
+        JSONStorageManager.saveData(this, "my_feed", new JSONObject(profFeed));
+
+
         // document "wraps" -> store all wraps
 
         // get all public wraps
