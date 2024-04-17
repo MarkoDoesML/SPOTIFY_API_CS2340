@@ -47,6 +47,7 @@
             android:layout_marginEnd="11dp"
             android:layout_marginBottom="17dp"
             android:clickable="true"
+            android:backgroundTint="@color/lime_green"
             app:srcCompat="@android:drawable/btn_radio" />
     </RelativeLayout>
 

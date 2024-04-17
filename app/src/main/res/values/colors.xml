@@ -8,5 +8,6 @@
     <color name="dark_gray">#2B2D30</color>
     <color name="med_gray">#535353</color>
     <color name="light_gray">#B3B3B3</color>
+    <color name="lighter_gray">#D3D3D3</color>
     <color name="lime_green">#1db954</color>
 </resources>

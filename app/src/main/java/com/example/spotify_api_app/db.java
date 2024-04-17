@@ -27,6 +27,7 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.WriteBatch;
 import com.google.firestore.v1.WriteResult;
 
 import org.json.JSONException;
@@ -37,6 +38,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -82,9 +84,8 @@ public class db {
                 });
     }
 
-    public static void addWrapped(JSONObject wrapped, int total) throws JSONException {
-        DocumentReference doc = db.collection(uid).document("wraps");
-
+    public static String getUid() {
+        return uid;
     }
 
     public DocumentReference getDocRef(String name) {
@@ -184,5 +185,58 @@ public class db {
         }
 
     }
+
+
+        // Get a reference to the Firestore database
+
+    public void deleteUser(String collectionPath, JSONObject feed) {
+        List<String> documentIdsToDelete = new ArrayList<>();
+
+        // Iterate over the keys in the "feed" JSON object
+        Iterator<String> keys = feed.keys();
+        while (keys.hasNext()) {
+            String documentId = keys.next();
+
+            // Check if the document ID starts with the specified prefix
+            if (documentId.startsWith(uid)) {
+                documentIdsToDelete.add(documentId);
+            }
+        }
+
+        // Use the FirestoreUtils class to delete the filtered documents
+        deleteMultipleDocuments(documentIdsToDelete, collectionPath);
+    }
+
+    public void deleteMultipleDocuments(List<String> documentIds, String collectionPath) {
+        // Get a reference to the collection
+        CollectionReference collectionRef = db.collection(collectionPath);
+
+        // Create a new batch
+        WriteBatch batch = db.batch();
+
+        // Iterate through the list of document IDs and add delete operations to the batch
+        for (String documentId : documentIds) {
+            DocumentReference documentRef = collectionRef.document(documentId);
+            batch.delete(documentRef);
+        }
+
+        // Commit the batch
+        batch.commit()
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        // Handle successful deletion
+                        // (Optional: Display a success message or update UI)
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        // Handle failure
+                        // (Optional: Display an error message or log the error)
+                    }
+                });
+    }
+
 
 }

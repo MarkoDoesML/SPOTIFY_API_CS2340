@@ -3,11 +3,9 @@ package com.example.spotify_api_app;
 import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.LinearLayout;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -45,6 +43,7 @@ public class FeedActivity extends AppCompatActivity {
 
         recyclerView = findViewById(R.id.recyclerView_feed);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
 
 
         wrappedItemList = new ArrayList<>();
