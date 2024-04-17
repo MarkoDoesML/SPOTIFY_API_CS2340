@@ -79,19 +79,12 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="24dp"
+                    android:paddingStart="4dp"
                     android:fontFamily="@font/poppins_semibold"
-                    android:paddingStart="4dp"
-                    android:textColor="@color/white"
+                    android:textSize="18sp"
                     android:text="Artist Name"
+                    android:textColor="@color/white"
                     android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/minutes1"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/light_gray"
-                    android:paddingStart="4dp"
-                    android:text="Minutes" />
 
             </LinearLayout>
 
@@ -134,19 +127,12 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="24dp"
-                    android:fontFamily="@font/poppins_semibold"
                     android:paddingStart="4dp"
+                    android:textSize="18sp"
+                    android:fontFamily="@font/poppins_semibold"
                     android:textColor="@color/white"
                     android:text="Artist Name"
                     android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/minutes2"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/light_gray"
-                    android:paddingStart="4dp"
-                    android:text="Minutes" />
 
             </LinearLayout>
 
@@ -191,17 +177,10 @@
                     android:layout_marginTop="24dp"
                     android:fontFamily="@font/poppins_semibold"
                     android:textColor="@color/white"
+                    android:textSize="18sp"
                     android:paddingStart="4dp"
                     android:text="Artist Name"
                     android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/minutes3"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/light_gray"
-                    android:paddingStart="4dp"
-                    android:text="Minutes" />
 
             </LinearLayout>
 
@@ -246,17 +225,10 @@
                     android:layout_marginTop="24dp"
                     android:fontFamily="@font/poppins_semibold"
                     android:paddingStart="4dp"
+                    android:textSize="18sp"
                     android:textColor="@color/white"
                     android:text="Artist Name"
                     android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/minutes4"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/light_gray"
-                    android:paddingStart="4dp"
-                    android:text="Minutes" />
 
             </LinearLayout>
 
@@ -301,17 +273,10 @@
                     android:layout_marginTop="24dp"
                     android:fontFamily="@font/poppins_semibold"
                     android:textColor="@color/white"
+                    android:textSize="18sp"
                     android:paddingStart="4dp"
                     android:text="Artist Name"
                     android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/minutes5"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/light_gray"
-                    android:paddingStart="4dp"
-                    android:text="Minutes" />
 
             </LinearLayout>
 
