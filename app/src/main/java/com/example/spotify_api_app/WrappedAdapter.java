@@ -20,12 +20,15 @@ import com.squareup.picasso.Picasso;
 
 import org.json.JSONObject;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 public class WrappedAdapter extends RecyclerView.Adapter<WrappedAdapter.WrappedViewHolder> {
     private Context context;
@@ -49,8 +52,8 @@ public class WrappedAdapter extends RecyclerView.Adapter<WrappedAdapter.WrappedV
         WrappedItem item = wrappedList.get(holder.getAdapterPosition());
         holder.usernameTextView.setText(item.getUsername());
         holder.dateTextView.setText(item.getDate());
-        LinkedTreeMap<String, Object> tracks = (LinkedTreeMap<String, Object>) (item.getWrapInfo().get("tracks"));
-        LinkedTreeMap<String, Object> topTrack = (LinkedTreeMap<String, Object>) tracks.get("track1");
+        Map<String, Object> tracks = (Map<String, Object>) (item.getWrapInfo().get("tracks"));
+        Map<String, Object> topTrack = (Map<String, Object>) tracks.get("track1");
         String topTrackImage = topTrack.get("image").toString();
         Picasso.get().load(topTrackImage).into(holder.topTrackImage);
 
