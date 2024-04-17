@@ -3,6 +3,7 @@ package com.example.spotify_api_app;
 import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -15,12 +16,15 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.gson.Gson;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 
 public class FeedActivity extends AppCompatActivity {
@@ -28,6 +32,7 @@ public class FeedActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private WrappedAdapter adapter;
     private List<WrappedItem> wrappedItemList;
+    private JSONObject feed;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -41,9 +46,34 @@ public class FeedActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.recyclerView_feed);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
+
         wrappedItemList = new ArrayList<>();
         adapter = new WrappedAdapter(this, wrappedItemList);
         recyclerView.setAdapter(adapter);
+        feed = JSONStorageManager.loadData(getApplicationContext(), "feed");
+        ArrayList<JSONObject> wraps = new ArrayList<>();
+        Iterator<String> wrapKeys = feed.keys();
+
+        while(wrapKeys.hasNext()) {
+            try {
+                String key = wrapKeys.next();
+                if (feed.get(key) instanceof JSONObject) {
+                    wraps.add((JSONObject) feed.get(key));
+                }
+            } catch (JSONException e) {
+                Log.d("JSONIterator", "Couldn't iterator through personal wraps: " + e);
+            }
+        }
+
+        wraps.sort(new WrapJSONComparator());
+
+        for (JSONObject wrap : wraps) {
+            try {
+                adapter.addItem(wrap.get("username").toString(), wrap.get("date").toString(), new Gson().fromJson(wrap.toString(), HashMap.class));
+            } catch (JSONException e) {
+                Log.d("MyFeedAdding", "Could not add wrap to public feed for wrap " + wrap.toString() + ": " + e);
+            }
+        }
 
         // Setup FloatingActionButton to show recommendations dialog
         FloatingActionButton fabRecommend = findViewById(R.id.recommend_artist); // Ensure this ID matches your layout

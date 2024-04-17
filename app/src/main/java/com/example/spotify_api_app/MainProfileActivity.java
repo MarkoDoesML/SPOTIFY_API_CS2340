@@ -13,6 +13,7 @@ import android.app.Activity;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 
@@ -23,12 +24,14 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import com.squareup.picasso.Picasso;
 
@@ -133,13 +136,6 @@ public class MainProfileActivity extends AppCompatActivity {
         wrappedAdapter = new WrappedAdapter(this, wrappedItemList);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(wrappedAdapter);
-        wrappedAdapter.setOnClickListener(new WrappedAdapter.OnClickListener() {
-            @Override
-            public void onClick(int position, WrappedItem wrappedItem) {
-                Intent intent = new Intent(MainProfileActivity.this, WrappedActivity.class);
-                startActivity(intent);
-            }
-        });
 
         database = new db(uid);
 
@@ -175,6 +171,31 @@ public class MainProfileActivity extends AppCompatActivity {
         JSONObject num = JSONStorageManager.loadData(getApplicationContext(), "number_of_wraps");
         my_feed = JSONStorageManager.loadData(getApplicationContext(), "my_feed");
         feed = JSONStorageManager.loadData(getApplicationContext(), "feed");
+
+        ArrayList<JSONObject> wraps = new ArrayList<>();
+        Iterator<String> wrapKeys = my_feed.keys();
+
+        while(wrapKeys.hasNext()) {
+            try {
+                String key = wrapKeys.next();
+                if (my_feed.get(key) instanceof JSONObject) {
+                    wraps.add((JSONObject) my_feed.get(key));
+                }
+            } catch (JSONException e) {
+                Log.d("JSONIterator", "Couldn't iterator through personal wraps: " + e);
+            }
+        }
+
+        wraps.sort(new WrapJSONComparator());
+
+        for (JSONObject wrap : wraps) {
+            try {
+                wrappedAdapter.addItem(wrap.get("username").toString(), wrap.get("date").toString(), new Gson().fromJson(wrap.toString(), HashMap.class));
+            } catch (JSONException e) {
+                Log.d("MyFeedAdding", "Could not add wrap to my feed: " + e);
+            }
+        }
+
 
 // Initialize a Map to store the converted values
         stats = new HashMap<>();
@@ -344,8 +365,7 @@ public class MainProfileActivity extends AppCompatActivity {
 
                 //TODO: use json content to fill ui
 
-                wrappedAdapter.addItem(username, date);
-                wrappedItemList = new ArrayList<>();
+                wrappedAdapter.addItem(username, wrapped.get("date").toString(), (HashMap<String, Object>) wrapped);
 
                 db.storeWrapped(wrapped, stats, view);
 

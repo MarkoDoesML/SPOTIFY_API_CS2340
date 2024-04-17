@@ -4,6 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:padding="16dp"
     android:background="@color/darker_gray">
 
     <TextView
@@ -19,7 +20,9 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView_feed"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="450dp"
+        android:layout_marginBottom="24dp"
+        android:orientation="horizontal" />
 
     <RelativeLayout
         android:layout_width="match_parent"
