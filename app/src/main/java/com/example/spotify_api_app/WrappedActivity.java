@@ -2,13 +2,30 @@ package com.example.spotify_api_app;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.ContentValues;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+
 import com.google.android.material.card.MaterialCardView;
+
+import java.io.File;
+import java.io.FileOutputStream;
 
 public class WrappedActivity extends AppCompatActivity {
     TextView topArtistName, topSongTitle, topSongArtist, topAlbumTitle, topAlbumArtist;
@@ -17,6 +34,8 @@ public class WrappedActivity extends AppCompatActivity {
     int artistImageResource, songImageResource, albumImageResource;
     MaterialCardView topArtistCard, topSongCard, topAlbumCard;
     Button backButton;
+    Button saveButton;
+    private int screenshotCounter = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,5 +114,49 @@ public class WrappedActivity extends AppCompatActivity {
                 finish();
             }
         });
+        saveButton = findViewById(R.id.save_btn);
+        saveButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                takeScreenshotAndSave();
+            }
+        });
+    }
+    private void takeScreenshotAndSave() {
+        try {
+            // Get the root view
+            View rootView = getWindow().getDecorView().findViewById(android.R.id.content);
+            rootView.setDrawingCacheEnabled(true);
+            Bitmap bitmap = Bitmap.createBitmap(rootView.getWidth(), rootView.getHeight(), Bitmap.Config.ARGB_8888);
+            Canvas canvas = new Canvas(bitmap);
+            rootView.draw(canvas);
+
+            // Save the bitmap to the gallery using MediaStore
+            ContentValues values = new ContentValues();
+            values.put(MediaStore.Images.Media.DISPLAY_NAME, "screenshot_" + System.currentTimeMillis() + ".jpg");
+            values.put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg");
+            values.put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/Screenshots");
+            values.put(MediaStore.Images.Media.IS_PENDING, 1);
+
+            // Insert the metadata to the MediaStore
+            Uri uri = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+
+            // Write the bitmap to the obtained uri
+            if (uri != null) {
+                OutputStream outputStream = getContentResolver().openOutputStream(uri);
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
+                outputStream.close();
+
+                // Inform the media scanner of the new image
+                values.put(MediaStore.Images.Media.IS_PENDING, 0);
+                getContentResolver().update(uri, values, null, null);
+            }
+
+            Toast.makeText(this, "Screenshot saved to gallery", Toast.LENGTH_SHORT).show();
+        } catch (Exception e) {
+            Toast.makeText(this, "Error saving screenshot: " + e.getMessage(), Toast.LENGTH_LONG).show();
+            e.printStackTrace();
+        }
     }
 }
+
