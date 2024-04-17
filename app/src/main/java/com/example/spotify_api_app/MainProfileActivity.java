@@ -366,7 +366,7 @@ public class MainProfileActivity extends AppCompatActivity {
                 //TODO: use json content to fill ui
 
                 wrappedAdapter.addItem(username, wrapped.get("date").toString(), (HashMap<String, Object>) wrapped);
-
+                recyclerView.scrollToPosition(0);
                 db.storeWrapped(wrapped, stats, view);
 
             }
