@@ -11,9 +11,9 @@ import android.widget.TextView;
 import com.google.android.material.card.MaterialCardView;
 
 public class WrappedActivity extends AppCompatActivity {
-    TextView topArtistName, topSongTitle, topSongArtist, topAlbumTitle, topAlbumArtist;
+    TextView titleView, topGenresView, topArtistName, topSongTitle, topSongArtist, topAlbumTitle, topAlbumArtist;
     ImageView topArtistImage, topSongImage, topAlbumImage;
-    String artistName, songTitle, songArtist, albumTitle, albumArtist;
+    String title, topGenres, artistName, songTitle, songArtist, albumTitle, albumArtist;
     int artistImageResource, songImageResource, albumImageResource;
     MaterialCardView topArtistCard, topSongCard, topAlbumCard;
     Button backButton;
@@ -24,6 +24,8 @@ public class WrappedActivity extends AppCompatActivity {
         setContentView(R.layout.activity_wrapped);
 
         // Retrieve views from layout
+        titleView = findViewById(R.id.title);
+        topGenresView = findViewById(R.id.top_genres);
         topArtistName = findViewById(R.id.top_artist_name);
         topArtistImage = findViewById(R.id.top_artist_image);
         topSongTitle = findViewById(R.id.top_song_title);
@@ -34,6 +36,7 @@ public class WrappedActivity extends AppCompatActivity {
         topAlbumImage = findViewById(R.id.top_album_image);
 
         // Example input values (replace these with your actual input)
+        topGenres = "Genre 1, Genre 2, Genre 3, Genre 4, Genre 5"; // Replace with string of top 5 genres
         artistName = "Example Artist";
         artistImageResource = R.drawable.artist_profile_pic; // Replace with actual resource ID
         songTitle = "Example Song";
