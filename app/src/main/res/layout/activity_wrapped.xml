@@ -6,8 +6,9 @@
     android:layout_height="match_parent"
     android:background="@color/darker_gray">
 
+
     <TextView
-        android:id="@+id/textView3"
+        android:id="@+id/title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:fontFamily="@font/poppins_semibold"
@@ -15,27 +16,54 @@
         android:textColor="@color/white"
         android:textSize="25sp"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_bias="0.545"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.043" />
+        app:layout_constraintVertical_bias="0.023" />
 
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:text="Top Genres:"
+        android:textColor="@color/lighter_gray"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/title" />
+
+    <TextView
+        android:id="@+id/top_genres"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Genres, Genres, Genres, Genres, Genres"
+        android:textColor="@color/lighter_gray"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toTopOf="@+id/top_artist_card"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.496"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView2"
+        app:layout_constraintVertical_bias="0.28" />
 
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/top_artist_card"
         android:layout_width="350dp"
         android:layout_height="200dp"
+        android:layout_marginTop="16dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.495"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView3"
+        app:layout_constraintTop_toBottomOf="@+id/title"
         app:layout_constraintVertical_bias="0.12">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@color/dark_gray"
+            android:background="@drawable/grad_light_blue"
             android:orientation="horizontal">
 
             <LinearLayout
@@ -52,7 +80,6 @@
                     android:paddingTop="10dp"
                     android:paddingStart="14dp"
                     android:textSize="15sp"
-                    android:textColor="@color/white"
                     android:text="Top Artist >" />
 
                 <TextView
@@ -61,14 +88,12 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="14dp"
                     android:layout_marginTop="44dp"
-                    android:textColor="@color/white"
                     android:text="Artist Name"
                     android:textStyle="bold" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/light_gray"
                     android:text="Minutes"
                     android:layout_marginStart="14dp" />
 
@@ -101,7 +126,7 @@
         android:layout_marginStart="28dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintVertical_bias="0.25"
+        app:layout_constraintVertical_bias="0.15"
         app:layout_constraintTop_toBottomOf="@+id/top_artist_card">
 
         <LinearLayout
@@ -154,7 +179,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.235"
-        app:layout_constraintVertical_bias="0.25"
+        app:layout_constraintVertical_bias="0.15"
         app:layout_constraintStart_toEndOf="@+id/top_song_card"
         app:layout_constraintTop_toBottomOf="@+id/top_artist_card">
 
@@ -219,7 +244,7 @@
         android:id="@+id/back_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:backgroundTint="#2B2D30"
+        android:backgroundTint="@color/med_gray"
         android:text="Back"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
