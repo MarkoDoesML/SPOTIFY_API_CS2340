@@ -10,6 +10,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -23,6 +24,14 @@ import java.util.Date;
 
 
 import com.google.android.material.card.MaterialCardView;
+import com.squareup.picasso.Picasso;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -30,8 +39,8 @@ import java.io.FileOutputStream;
 public class WrappedActivity extends AppCompatActivity {
     TextView titleView, topGenresView, topArtistName, topSongTitle, topSongArtist, topAlbumTitle, topAlbumArtist;
     ImageView topArtistImage, topSongImage, topAlbumImage;
-    String title, topGenres, artistName, songTitle, songArtist, albumTitle, albumArtist;
-    int artistImageResource, songImageResource, albumImageResource;
+    String username, title, topGenres, artistName, artistImageUrl, songTitle, songArtist, songImageUrl, albumTitle, albumArtist, albumImageUrl;
+
     MaterialCardView topArtistCard, topSongCard, topAlbumCard;
     Button backButton;
     Button saveButton;
@@ -54,16 +63,30 @@ public class WrappedActivity extends AppCompatActivity {
         topAlbumArtist = findViewById(R.id.top_album_artist);
         topAlbumImage = findViewById(R.id.top_album_image);
 
-        // Example input values (replace these with your actual input)
-        topGenres = "Genre 1, Genre 2, Genre 3, Genre 4, Genre 5"; // Replace with string of top 5 genres
-        artistName = "Example Artist";
-        artistImageResource = R.drawable.artist_profile_pic; // Replace with actual resource ID
-        songTitle = "Example Song";
-        songArtist = "Example Artist";
-        songImageResource = R.drawable.tpab; // Replace with actual resource ID
-        albumTitle = "Example Album";
-        albumArtist = "Example Artist";
-        albumImageResource = R.drawable.pinkfloyd; // Replace with actual resource ID
+        // Get wrapped information
+        Intent i = getIntent();
+        HashMap<String, Object> wrapped = (HashMap<String, Object>) i.getSerializableExtra("wrapped");
+
+        // Get username for the current user
+        JSONObject info = JSONStorageManager.loadData(getApplicationContext(), "profile_info");
+        try {
+            username = info.getString("display_name");
+        } catch (JSONException e) {
+            Log.d("WrappedActivityUser", "Could not get username for wrapped: " + e);
+        }
+
+
+        // Set wrapped information to fields
+        title = wrapped.get("duration").toString();
+        topGenres = ((ArrayList<String>) wrapped.get("genres")).toString();
+        artistName = ((HashMap<String, Object>) ((HashMap<String, Object>) wrapped.get("artists")).get("artist1")).get("name").toString();
+        artistImageUrl = ((HashMap<String, Object>) ((HashMap<String, Object>) wrapped.get("artists")).get("artist1")).get("image").toString(); // Replace with actual resource ID
+        songTitle = ((HashMap<String, Object>) ((HashMap<String, Object>) wrapped.get("tracks")).get("track1")).get("name").toString();
+        songArtist = ((ArrayList<String>) (((HashMap<String, Object>) ((HashMap<String, Object>) wrapped.get("tracks")).get("track1")).get("artists"))).get(0);
+        songImageUrl = ((HashMap<String, Object>) ((HashMap<String, Object>) wrapped.get("tracks")).get("track1")).get("image").toString(); // Replace with actual resource ID
+        albumTitle = ((HashMap<String, Object>) ((HashMap<String, Object>) wrapped.get("albums")).get("album1")).get("name").toString();;
+        albumArtist = ((ArrayList<String>) (((HashMap<String, Object>) ((HashMap<String, Object>) wrapped.get("albums")).get("album1")).get("artist"))).get(0);
+        albumImageUrl = ((HashMap<String, Object>) ((HashMap<String, Object>) wrapped.get("albums")).get("album1")).get("image").toString(); // Replace with actual resource ID
 
         // TODO: use json content to fill ui
         // TODO: get rid of minutes
@@ -72,14 +95,24 @@ public class WrappedActivity extends AppCompatActivity {
 
 
         // Set values to the views
+        if (username.equals(wrapped.get("username").toString())) {
+            if (title.equals("short_term")) titleView.setText("Your Past 4 Weeks in Music");
+            else if (title.equals("medium_term")) titleView.setText("Your Past 6 Months in Music");
+            else titleView.setText("Your Past Year in Music");
+        } else {
+            if (title.equals("short_term")) titleView.setText(wrapped.get("username").toString() + "'s Past 4 Weeks in Music");
+            else if (title.equals("medium_term")) titleView.setText(wrapped.get("username").toString() + "'s Past 6 Months in Music");
+            else titleView.setText(wrapped.get("username").toString()+ "'s Past Year in Music");
+        }
+        topGenresView.setText(topGenres);
         topArtistName.setText(artistName);
-        topArtistImage.setImageResource(artistImageResource);
+        Picasso.get().load(artistImageUrl).into(topArtistImage);
         topSongTitle.setText(songTitle);
         topSongArtist.setText(songArtist);
-        topSongImage.setImageResource(songImageResource);
+        Picasso.get().load(songImageUrl).into(topSongImage);
         topAlbumTitle.setText(albumTitle);
         topAlbumArtist.setText(albumArtist);
-        topAlbumImage.setImageResource(albumImageResource);
+        Picasso.get().load(albumImageUrl).into(topAlbumImage);
 
         topArtistCard = findViewById(R.id.top_artist_card);
         topSongCard = findViewById(R.id.top_song_card);
@@ -89,6 +122,7 @@ public class WrappedActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(WrappedActivity.this, ArtistsActivity.class);
+                intent.putExtra("artists", (HashMap<String, Object>) wrapped.get("artists"));
                 startActivity(intent);
             }
         });
@@ -97,6 +131,7 @@ public class WrappedActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(WrappedActivity.this, SongsActivity.class);
+                intent.putExtra("tracks", (HashMap<String, Object>) wrapped.get("tracks"));
                 startActivity(intent);
             }
         });
@@ -105,6 +140,7 @@ public class WrappedActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(WrappedActivity.this, AlbumsActivity.class);
+                intent.putExtra("albums", (HashMap<String, Object>) wrapped.get("albums"));
                 startActivity(intent);
             }
         });
