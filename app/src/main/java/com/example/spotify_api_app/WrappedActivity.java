@@ -32,12 +32,9 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-<<<<<<< HEAD
 
 import java.io.File;
 import java.io.FileOutputStream;
-=======
->>>>>>> 516b47e263d81e4ebe10d0fcc7cf139294c9dcc7
 
 public class WrappedActivity extends AppCompatActivity {
     TextView durationTextView, topArtistName, topSongTitle, topSongArtist, topAlbumTitle, topAlbumArtist;
