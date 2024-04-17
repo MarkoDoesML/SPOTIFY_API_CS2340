@@ -93,17 +93,21 @@ public class MainProfileActivity extends AppCompatActivity {
     private AccessTokenData accessTokenData;
     private String mAccessToken, mAccessCode;
     TextView usernameTextView;
-    String username, link, uri;
+    String username, link, uri, uid;
     int private_wraps, public_wraps;
     CompletableFuture<DocumentSnapshot> output;
     Map<String, Integer> stats;
     private ImageView profileImage;
     JSONObject my_feed, feed;
+    public db database;
     @Override
 
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_profile);
+
+        SharedPreferences auths = getSharedPreferences("loginPrefs", MODE_PRIVATE);
+        uid = auths.getString("uid", "junk");
 
         sharedPreferences = getSharedPreferences("AccessTokenData", MODE_PRIVATE);
         String json = sharedPreferences.getString("accessTokenData", null);
@@ -137,7 +141,7 @@ public class MainProfileActivity extends AppCompatActivity {
             }
         });
 
-
+        database = new db(uid);
 
         String img_url = "https://image-cdn-ak.spotifycdn.com/image/ab67706c0000da8463bcdace67f79859e30a17fa";
         JSONObject info = JSONStorageManager.loadData(getApplicationContext(), "profile_info");
@@ -329,7 +333,7 @@ public class MainProfileActivity extends AppCompatActivity {
                 try {
                     my_feed.put("wrap_" + stats.get("total"), new JSONObject(wrapped));
                     if (view) {
-                        feed.put(db.uid + "_wrap_" + stats.get("public"), new JSONObject(wrapped));
+                        feed.put(database.getUid() + "_wrap_" + stats.get("public"), new JSONObject(wrapped));
                     }
                 } catch (JSONException e) {
                     System.out.println("error");
@@ -404,24 +408,22 @@ public class MainProfileActivity extends AppCompatActivity {
                 .setPositiveButton("Delete", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                    FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                       user.delete()
+                        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                        user.delete()
                                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                                     @Override
                                     public void onComplete(@NonNull Task<Void> task) {
                                         if (task.isSuccessful()) {
                                             Log.d("deleteUser()", "User account deleted.");
+                                            feed = JSONStorageManager.loadData(getApplicationContext(), "feed");
+                                            database.deleteUser("public_wraps", feed);
+                                            performLogout(null);
+                                            finish();
                                        }
                                    }
                                 });
 
-                        performLogout(null);
-                        finish();
                     }
-                    //TODO: delete collection and user uid
-                    //TODO: delete all documents starting with user uid in "public_wraps"
-
-
 
                 })
                 .setNegativeButton("Cancel", null)
