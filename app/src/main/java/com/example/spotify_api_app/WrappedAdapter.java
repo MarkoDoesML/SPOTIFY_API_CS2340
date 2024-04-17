@@ -1,6 +1,8 @@
 package com.example.spotify_api_app;
 
 import android.content.Context;
+import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,9 +14,16 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.gson.Gson;
+import com.google.gson.internal.LinkedTreeMap;
+import com.squareup.picasso.Picasso;
+
+import org.json.JSONObject;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
@@ -40,6 +49,10 @@ public class WrappedAdapter extends RecyclerView.Adapter<WrappedAdapter.WrappedV
         WrappedItem item = wrappedList.get(holder.getAdapterPosition());
         holder.usernameTextView.setText(item.getUsername());
         holder.dateTextView.setText(item.getDate());
+        LinkedTreeMap<String, Object> tracks = (LinkedTreeMap<String, Object>) (item.getWrapInfo().get("tracks"));
+        LinkedTreeMap<String, Object> topTrack = (LinkedTreeMap<String, Object>) tracks.get("track1");
+        String topTrackImage = topTrack.get("image").toString();
+        Picasso.get().load(topTrackImage).into(holder.topTrackImage);
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -47,7 +60,10 @@ public class WrappedAdapter extends RecyclerView.Adapter<WrappedAdapter.WrappedV
                 int clickedPosition = holder.getAdapterPosition();
                 if (onClickListener != null && clickedPosition != RecyclerView.NO_POSITION) {
                     onClickListener.onClick(clickedPosition, wrappedList.get(clickedPosition));
-                }
+                };
+                Intent i = new Intent(context, WrappedActivity.class);
+                i.putExtra("wrapped", item.getWrapInfo());
+                context.startActivity(i);
             }
         });
     }
@@ -57,19 +73,21 @@ public class WrappedAdapter extends RecyclerView.Adapter<WrappedAdapter.WrappedV
         return wrappedList.size();
     }
 
-    public void addItem(String username, String date) {
-        wrappedList.add(new WrappedItem(username, date));
-        notifyItemInserted(wrappedList.size() - 1);
+    public void addItem(String username, String date, HashMap<String, Object> wrapInfo) {
+        wrappedList.add(0, new WrappedItem(username, date, wrapInfo));
+        notifyItemInserted(0);
     }
 
     public static class WrappedViewHolder extends RecyclerView.ViewHolder {
         TextView usernameTextView;
         TextView dateTextView;
+        ImageView topTrackImage;
 
         public WrappedViewHolder(@NonNull View itemView) {
             super(itemView);
             usernameTextView = itemView.findViewById(R.id.username);
             dateTextView = itemView.findViewById(R.id.date);
+            topTrackImage = itemView.findViewById(R.id.profileImage);
         }
     }
 
