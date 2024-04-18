@@ -83,6 +83,14 @@ public class FeedActivity extends AppCompatActivity {
             }
         });
 
+        FloatingActionButton refresh = findViewById(R.id.refresh_feed);
+        refresh.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                navigateToLoginRefresh();
+            }
+        });
+
         // Logic for Bottom Nav Bar
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigation);
         bottomNavigationView.setSelectedItemId(R.id.nav_feed);
@@ -97,6 +105,13 @@ public class FeedActivity extends AppCompatActivity {
                 return false;
             }
         });
+    }
+
+    private void navigateToLoginRefresh() {
+        Intent intent = new Intent(this, wSpotify.class);
+        intent.putExtra("refresh", true);
+        startActivity(intent);
+        finish();
     }
 
     private List<Artist> parseArtistsFromResponse(JSONObject jsonResponse) {
