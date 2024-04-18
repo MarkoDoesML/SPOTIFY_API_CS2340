@@ -78,7 +78,7 @@ public class WrappedActivity extends AppCompatActivity {
 
         // Set wrapped information to fields
         title = wrapped.get("duration").toString();
-        topGenres = ((ArrayList<String>) wrapped.get("genres")).toString();
+        topGenres = StringUtils.joinAndCapitalizeFirstLetters((ArrayList<String>) wrapped.get("genres"));
         artistName = ((HashMap<String, Object>) ((HashMap<String, Object>) wrapped.get("artists")).get("artist1")).get("name").toString();
         artistImageUrl = ((HashMap<String, Object>) ((HashMap<String, Object>) wrapped.get("artists")).get("artist1")).get("image").toString(); // Replace with actual resource ID
         songTitle = ((HashMap<String, Object>) ((HashMap<String, Object>) wrapped.get("tracks")).get("track1")).get("name").toString();

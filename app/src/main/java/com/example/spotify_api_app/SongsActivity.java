@@ -57,23 +57,23 @@ public class SongsActivity extends AppCompatActivity {
 
         // Example input values (replace these with your actual input)
         songName1 = ((HashMap<String, Object>) tracks.get("track1")).get("name").toString();
-        artistName1 = ((ArrayList<String>) ((HashMap<String, Object>) tracks.get("track1")).get("artists")).get(0);
+        artistName1 = StringUtils.joinStrings((ArrayList<String>) ((HashMap<String, Object>) tracks.get("track1")).get("artists"));
         songImage1 = ((HashMap<String, Object>) tracks.get("track1")).get("image").toString();
 
         songName2 = ((HashMap<String, Object>) tracks.get("track2")).get("name").toString();
-        artistName2 = ((ArrayList<String>) ((HashMap<String, Object>) tracks.get("track2")).get("artists")).get(0);
+        artistName2 = StringUtils.joinStrings((ArrayList<String>) ((HashMap<String, Object>) tracks.get("track2")).get("artists"));
         songImage2 = ((HashMap<String, Object>) tracks.get("track2")).get("image").toString();
 
         songName3 = ((HashMap<String, Object>) tracks.get("track3")).get("name").toString();
-        artistName3 = ((ArrayList<String>) ((HashMap<String, Object>) tracks.get("track3")).get("artists")).get(0);
+        artistName3 = StringUtils.joinStrings((ArrayList<String>) ((HashMap<String, Object>) tracks.get("track3")).get("artists"));
         songImage3 = ((HashMap<String, Object>) tracks.get("track3")).get("image").toString();
 
         songName4 = ((HashMap<String, Object>) tracks.get("track4")).get("name").toString();
-        artistName4 = ((ArrayList<String>) ((HashMap<String, Object>) tracks.get("track4")).get("artists")).get(0);
+        artistName4 = StringUtils.joinStrings((ArrayList<String>) ((HashMap<String, Object>) tracks.get("track4")).get("artists"));
         songImage4 = ((HashMap<String, Object>) tracks.get("track4")).get("image").toString();
 
         songName5 = ((HashMap<String, Object>) tracks.get("track5")).get("name").toString();
-        artistName5 = ((ArrayList<String>) ((HashMap<String, Object>) tracks.get("track5")).get("artists")).get(0);
+        artistName5 = StringUtils.joinStrings((ArrayList<String>) ((HashMap<String, Object>) tracks.get("track5")).get("artists"));
         songImage5 = ((HashMap<String, Object>) tracks.get("track5")).get("image").toString();
 
         // Set values to the views
