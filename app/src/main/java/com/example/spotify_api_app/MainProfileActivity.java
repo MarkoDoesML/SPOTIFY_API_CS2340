@@ -33,6 +33,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+
+import com.google.firebase.auth.AuthResult;
 import com.squareup.picasso.Picasso;
 
 
@@ -429,20 +431,32 @@ public class MainProfileActivity extends AppCompatActivity {
                 .setPositiveButton("Delete", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                        user.delete()
-                                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                        SharedPreferences auths = getSharedPreferences("loginPrefs", MODE_PRIVATE);
+                        String email = auths.getString("username", "junk");
+                        String password = auths.getString("password", "junk");
+                        FirebaseAuth mAuth= FirebaseAuth.getInstance();
+
+                        mAuth.signInWithEmailAndPassword(email, password)
+                                .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                                     @Override
-                                    public void onComplete(@NonNull Task<Void> task) {
-                                        if (task.isSuccessful()) {
-                                            Log.d("deleteUser()", "User account deleted.");
-                                            feed = JSONStorageManager.loadData(getApplicationContext(), "feed");
-                                            database.deleteUser("public_wraps", feed);
-                                            performLogout(null);
-                                            finish();
-                                       }
-                                   }
+                                    public void onComplete(@NonNull Task<AuthResult> task) {
+                                        mAuth.getCurrentUser().delete()
+                                                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                    @Override
+                                                    public void onComplete(@NonNull Task<Void> task) {
+                                                        if (task.isSuccessful()) {
+                                                            Log.d("deleteUser()", "User account deleted.");
+                                                            feed = JSONStorageManager.loadData(getApplicationContext(), "feed");
+                                                            database.deleteUser("public_wraps", feed);
+                                                            performLogout(null);
+                                                            finish();
+                                                        }
+                                                    }
+                                                });
+                                    }
                                 });
+
+
 
                     }
 
