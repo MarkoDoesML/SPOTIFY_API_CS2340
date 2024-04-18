@@ -3,6 +3,7 @@ package com.example.spotify_api_app;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.annotation.NonNull;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
@@ -11,6 +12,7 @@ import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -32,8 +34,19 @@ public class changeLoginInfoActivity extends AppCompatActivity {
         updateEmailButton.setOnClickListener(v -> {
             String newEmail = updateEmailEditText.getText().toString().trim();
             if (!newEmail.isEmpty()) {
-                FirebaseAuth auth = FirebaseAuth.getInstance();
-                FirebaseUser user = auth.getCurrentUser();
+                SharedPreferences auths = getSharedPreferences("loginPrefs", MODE_PRIVATE);
+                String email = auths.getString("username", "junk");
+                String password = auths.getString("password", "junk");
+                FirebaseAuth mAuth= FirebaseAuth.getInstance();
+                FirebaseUser user = mAuth.getCurrentUser();
+
+                mAuth.signInWithEmailAndPassword(email, password)
+                        .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                            @Override
+                            public void onComplete(@NonNull Task<AuthResult> task) {
+
+                            }
+                        });
 
                 if (user != null) {
                     user.updateEmail(newEmail).addOnCompleteListener(task -> {
