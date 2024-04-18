@@ -198,13 +198,24 @@ public class wSpotify extends AppCompatActivity{
 //        JSONStorageManager.saveData(getApplicationContext(), "medium_term", medium_term);
 //        JSONStorageManager.saveData(getApplicationContext(), "long_term", long_term);
 
-        navigateToMainFeedActivity();
+        if (getIntent().getBooleanExtra("refresh", false)) {
+            navigateToFeedActivity();
+        } else {
+            navigateToMainFeedActivity();
+
+        }
         // _____________________________________________________________
 
     }
 
     private void navigateToMainFeedActivity() {
         Intent intent = new Intent(wSpotify.this, MainProfileActivity.class);
+        startActivity(intent);
+        finish();
+    }
+
+    private void navigateToFeedActivity() {
+        Intent intent = new Intent(wSpotify.this, FeedActivity.class);
         startActivity(intent);
         finish();
     }
