@@ -322,6 +322,7 @@ public class MainProfileActivity extends AppCompatActivity {
 
                 if ((Boolean) wrapped.get("error")) {
                     navigateToLoginRefresh();
+                    return;
                 }
 
                 wrapped.remove("error");
