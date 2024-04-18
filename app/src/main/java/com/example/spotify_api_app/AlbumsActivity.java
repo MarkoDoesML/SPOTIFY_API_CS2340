@@ -57,23 +57,23 @@ public class AlbumsActivity extends AppCompatActivity {
 
         // Example input values (replace these with your actual input)
         albumName1 = ((HashMap<String, Object>) albums.get("album1")).get("name").toString();
-        artistName1 = ((ArrayList<String>) ((HashMap<String, Object>) albums.get("album1")).get("artist")).get(0);
+        artistName1 = StringUtils.joinStrings((ArrayList<String>) ((HashMap<String, Object>) albums.get("album1")).get("artist"));
         albumImage1 = ((HashMap<String, Object>) albums.get("album1")).get("image").toString();
 
         albumName2 = ((HashMap<String, Object>) albums.get("album2")).get("name").toString();
-        artistName2 = ((ArrayList<String>) ((HashMap<String, Object>) albums.get("album2")).get("artist")).get(0);
+        artistName2 = StringUtils.joinStrings((ArrayList<String>) ((HashMap<String, Object>) albums.get("album2")).get("artist"));
         albumImage2 = ((HashMap<String, Object>) albums.get("album2")).get("image").toString(); // Replace with actual resource ID
 
         albumName3 = ((HashMap<String, Object>) albums.get("album3")).get("name").toString();
-        artistName3 = ((ArrayList<String>) ((HashMap<String, Object>) albums.get("album3")).get("artist")).get(0);
+        artistName3 = StringUtils.joinStrings((ArrayList<String>) ((HashMap<String, Object>) albums.get("album3")).get("artist"));
         albumImage3 = ((HashMap<String, Object>) albums.get("album3")).get("image").toString(); // Replace with actual resource ID
 
         albumName4 = ((HashMap<String, Object>) albums.get("album4")).get("name").toString();
-        artistName4 = ((ArrayList<String>) ((HashMap<String, Object>) albums.get("album4")).get("artist")).get(0);
+        artistName4 = StringUtils.joinStrings((ArrayList<String>) ((HashMap<String, Object>) albums.get("album4")).get("artist"));
         albumImage4 = ((HashMap<String, Object>) albums.get("album4")).get("image").toString();
 
         albumName5 = ((HashMap<String, Object>) albums.get("album5")).get("name").toString();
-        artistName5 = ((ArrayList<String>) ((HashMap<String, Object>) albums.get("album5")).get("artist")).get(0);
+        artistName5 = StringUtils.joinStrings((ArrayList<String>) ((HashMap<String, Object>) albums.get("album5")).get("artist"));
         albumImage5 = ((HashMap<String, Object>) albums.get("album5")).get("image").toString();
 
         // Set values to the views
